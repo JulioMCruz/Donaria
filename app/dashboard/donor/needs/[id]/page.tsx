@@ -4,7 +4,7 @@ import { ArrowLeft, HandHeart } from "lucide-react"
 import { ImageGallery } from "@/app/components/beneficiary/image-gallery"
 import { DonationList } from "@/app/components/beneficiary/donation-list"
 import { ChangeHistoryList } from "@/app/components/beneficiary/change-history-list"
-import { DonationForm } from "@/app/components/donor/donation-form"
+import { DonationInteractionCard } from "@/app/components/donor/donation-interaction-card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CommentList } from "@/app/components/donor/comment-list"
@@ -21,6 +21,9 @@ const needDetails = {
   amountRaised: 1200,
   walletAddress: "GABCDE...WXYZ",
   status: "Verified",
+  author: "Maria Rodriguez",
+  authorAvatarUrl: "/beneficiary-avatar.png",
+  reputationScore: 92,
   images: [
     "/medical-clinic-waiting-area.png",
     "/placeholder-8ospr.png",
@@ -55,13 +58,6 @@ const needDetails = {
       text: "Sending support from afar.",
       avatarUrl: null,
     },
-    {
-      id: "comment3",
-      author: "Maria S.",
-      date: "2025-07-13",
-      text: "My thoughts are with your community.",
-      avatarUrl: "/avatar-woman.png",
-    },
   ],
 }
 
@@ -88,7 +84,7 @@ export default function DonorNeedDetailPage({ params }: { params: { id: string }
               <ImageGallery images={needDetails.images} />
             </div>
             <div className="row-start-1 lg:row-auto">
-              <DonationForm need={needDetails} />
+              <DonationInteractionCard need={needDetails} />
             </div>
           </div>
 
