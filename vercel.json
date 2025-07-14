@@ -36,6 +36,34 @@
     {
       "source": "/api/check-funding-wallet",
       "destination": "/api/vercel/check-funding-wallet"
+    },
+    {
+      "source": "/api/soroban/need-reports/user",
+      "destination": "/api/vercel/soroban/need-reports/user"
+    },
+    {
+      "source": "/api/soroban/need-reports/get",
+      "destination": "/api/vercel/soroban/need-reports/get"
+    },
+    {
+      "source": "/api/soroban/need-reports/update",
+      "destination": "/api/vercel/soroban/need-reports/update"
+    },
+    {
+      "source": "/api/soroban/get-all-users",
+      "destination": "/api/vercel/soroban/get-all-users"
+    },
+    {
+      "source": "/api/soroban/store-message-with-key",
+      "destination": "/api/vercel/soroban/store-message-with-key"
+    },
+    {
+      "source": "/api/soroban/get-message-count",
+      "destination": "/api/vercel/soroban/get-message-count"
+    },
+    {
+      "source": "/api/soroban/get-user-messages",
+      "destination": "/api/vercel/soroban/get-user-messages"
     }
   ]
 }
