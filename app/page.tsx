@@ -1,48 +1,10 @@
 import Link from "next/link"
-import { HandHeart, ShieldCheck, Zap, SearchCheck, Share2, Wallet, Smartphone, Menu } from "lucide-react"
+import { HandHeart, ShieldCheck, Zap, SearchCheck, Share2, Wallet, Smartphone } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet"
-import { MobileNav } from "@/app/components/mobile-nav"
 
 export default function DonariaLandingPage() {
   return (
     <div className="flex flex-col min-h-[100dvh] bg-gray-50 dark:bg-gray-950">
-      <header className="px-4 md:px-6 h-16 flex items-center justify-between border-b bg-white dark:bg-gray-900 sticky top-0 z-50">
-        <Link href="#" className="flex items-center justify-center gap-2">
-          <HandHeart className="h-6 w-6 text-teal-500" />
-          <span className="font-bold text-xl text-gray-800 dark:text-white">DONARIA</span>
-        </Link>
-        <nav className="ml-auto hidden md:flex gap-4 sm:gap-6 items-center">
-          <Link
-            href="#features"
-            className="text-sm font-medium hover:underline underline-offset-4 text-gray-600 dark:text-gray-300"
-          >
-            How it Works
-          </Link>
-          <Link
-            href="#impact"
-            className="text-sm font-medium hover:underline underline-offset-4 text-gray-600 dark:text-gray-300"
-          >
-            Impact
-          </Link>
-          <Link href="/login">
-            <Button variant="outline" size="sm">
-              Log In
-            </Button>
-          </Link>
-        </nav>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="md:hidden ml-auto bg-transparent">
-              <Menu className="h-6 w-6" />
-              <span className="sr-only">Toggle navigation menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right">
-            <MobileNav />
-          </SheetContent>
-        </Sheet>
-      </header>
 
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 bg-white dark:bg-gray-900">
@@ -57,12 +19,16 @@ export default function DonariaLandingPage() {
               </p>
             </div>
             <div className="mt-8 flex flex-col gap-4 min-[400px]:flex-row justify-center">
-              <Button size="lg" className="bg-teal-500 hover:bg-teal-600 text-white">
-                Donate Now
-              </Button>
-              <Button size="lg" variant="outline">
-                Report a Need
-              </Button>
+              <Link href="/login">
+                <Button size="lg" className="bg-teal-500 hover:bg-teal-600 text-white">
+                  Donate Now
+                </Button>
+              </Link>
+              <Link href="/login">
+                <Button size="lg" variant="outline">
+                  Report a Need
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
@@ -212,12 +178,16 @@ export default function DonariaLandingPage() {
             </div>
             <div className="mx-auto w-full max-w-sm space-y-2">
               <div className="flex flex-col gap-4 min-[400px]:flex-row justify-center">
-                <Button size="lg" className="bg-teal-500 hover:bg-teal-600 text-white">
-                  Donate Now
-                </Button>
-                <Button size="lg" variant="outline">
-                  Get Involved
-                </Button>
+                <Link href="/login">
+                  <Button size="lg" className="bg-teal-500 hover:bg-teal-600 text-white">
+                    Donate Now
+                  </Button>
+                </Link>
+                <Link href="/login">
+                  <Button size="lg" variant="outline">
+                    Get Involved
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

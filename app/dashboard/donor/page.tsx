@@ -1,6 +1,4 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { HandHeart, Search } from "lucide-react"
+import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DonorNeedCard } from "@/app/components/donor/donor-need-card"
@@ -52,18 +50,6 @@ const allNeeds = [
 export default function DonorDashboard() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-950">
-      <header className="px-4 md:px-6 h-16 flex items-center justify-between border-b bg-white dark:bg-gray-900 sticky top-0 z-10">
-        <Link href="/" className="flex items-center justify-center gap-2">
-          <HandHeart className="h-6 w-6 text-teal-500" />
-          <span className="font-bold text-xl text-gray-800 dark:text-white">DONARIA</span>
-        </Link>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-muted-foreground hidden sm:inline">Donor</span>
-          <Link href="/">
-            <Button variant="outline">Log Out</Button>
-          </Link>
-        </div>
-      </header>
 
       <main className="flex-1 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
