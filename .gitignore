@@ -25,3 +25,37 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Soroban Smart Contract Build Artifacts
+/contracts-soroban/**/target/
+/contracts-soroban/**/*.wasm
+/contracts-soroban/**/Cargo.lock
+
+# Rust compilation artifacts
+**/.cargo/
+**/target/
+**/*.rs.bk
+**/*.pdb
+
+# Soroban CLI artifacts
+.soroban/
+.stellar/
+
+# Contract deployment artifacts
+contract-data-*.json
+contract-id-*.txt
+contract-meta-*.json
+
+# Wasm files (generated)
+*.wasm
+
+# Soroban network configuration
+stellar-networks.json
+
+# Test artifacts
+test-*.json
+simulation-*.json
+
+# IDE files for Rust development
+**/.vscode/settings.json
+**/.idea/

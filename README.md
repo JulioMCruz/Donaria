@@ -45,9 +45,10 @@ Our platform serves diverse crisis scenarios:
 - **Multi-Language Support**: Accessible to global communities (coming soon)
 
 #### 💰 Financial Innovation
+- **Gasless Transactions**: Users never pay blockchain fees - all covered by the platform
 - **Micro-Donations**: Support causes with as little as $0.01 equivalent
 - **Cross-Border Payments**: Send aid anywhere in seconds, not days
-- **Low Transaction Costs**: ~$0.00001 per transaction vs traditional remittance fees
+- **Zero User Fees**: Platform sponsors all blockchain transaction costs
 - **Real-Time Settlement**: Instant delivery to beneficiary wallets
 - **Multi-Currency Support**: XLM, USDC, and other Stellar assets
 
@@ -68,15 +69,25 @@ Our platform serves diverse crisis scenarios:
 
 ### Backend & Services
 - **Firebase Authentication** (Google, Twitter, Instagram, Email, Phone)
-- **Firebase Firestore** for user data persistence
-- **Stellar Network** (Testnet/Mainnet) for transactions
+- **Firebase Firestore** for user data and metadata
+- **Firebase Storage** for image and document uploads
+- **Soroban Smart Contracts** for transparent need reports on Stellar
+- **Stellar Network** (Testnet/Mainnet) for gasless transactions
 - **CryptoJS** for client-side encryption
+
+### Smart Contract System
+- **Need Reports Contract**: Transparent CRUD operations for humanitarian needs
+- **Change Logging**: Immutable audit trail for all report modifications
+- **Admin Controls**: Verification and status management system
+- **Statistics Tracking**: Real-time platform metrics and analytics
+- **App-Sponsored Transactions**: Zero gas fees for users
 
 ### Key Security Features
 - PIN-based private key encryption
-- Server-side automatic wallet funding
+- App-sponsored gasless transactions
 - Firebase Admin SDK for secure operations
-- Client-side wallet management
+- Smart contract transparency and immutability
+- Client-side wallet management with full user control
 
 ## Architecture
 
@@ -84,11 +95,12 @@ Our platform serves diverse crisis scenarios:
 flowchart TB
     subgraph Frontend [Frontend Layer]
         UI[Next.js 15 App]
-        AUTH[Firebase Auth]
-        WALLET[Stellar Wallet]
+        AUTH[Social Login]
+        WALLET[PIN-Encrypted Wallet]
+        CREATE[Create Need Form]
     end
     
-    subgraph AuthProviders [Authentication Providers]
+    subgraph AuthProviders [Social Authentication]
         GOOGLE[Google OAuth]
         TWITTER[X/Twitter OAuth]
         INSTAGRAM[Instagram OAuth]
@@ -96,24 +108,36 @@ flowchart TB
         PHONE[Phone/SMS]
     end
     
-    subgraph Blockchain [Blockchain Layer]
-        STELLAR[Stellar Network]
-        HORIZON[Horizon API]
-        ACCOUNT[User Accounts]
+    subgraph SmartContract [Smart Contract Layer]
+        CONTRACT[Need Reports Contract]
+        CRUD[CRUD Operations]
+        LOGS[Change Logging]
+        STATS[Platform Statistics]
     end
     
-    subgraph Database [Database Layer]
+    subgraph Blockchain [Stellar Network]
+        STELLAR[Stellar Blockchain]
+        HORIZON[Horizon API]
+        GASLESS[App-Sponsored Txns]
+        FUNDING_WALLET[Platform Funding Wallet]
+    end
+    
+    subgraph Storage [Data Storage]
         FIRESTORE[(Firebase Firestore)]
+        FIREBASE_STORAGE[Firebase Storage]
         USERDATA[User Profiles]
         WALLETDATA[Encrypted Wallets]
+        IMAGES[Report Images]
     end
     
     subgraph API [API Layer]
-        FUNDING[/api/funding]
-        USERS[/api/users]
-        INSTA_AUTH[/api/auth/instagram]
+        CREATE_API[/api/soroban/create]
+        GET_API[/api/soroban/get]
+        FUNDING_API[/api/funding]
+        USERS_API[/api/users]
     end
     
+    %% Social Authentication Flow
     UI --> AUTH
     AUTH --> GOOGLE
     AUTH --> TWITTER
@@ -121,18 +145,39 @@ flowchart TB
     AUTH --> EMAIL
     AUTH --> PHONE
     
+    %% Wallet & Smart Contract Flow
     UI --> WALLET
-    WALLET --> STELLAR
-    STELLAR --> HORIZON
-    HORIZON --> ACCOUNT
+    CREATE --> CREATE_API
+    CREATE_API --> FIREBASE_STORAGE
+    CREATE_API --> CONTRACT
     
-    UI --> API
-    API --> FIRESTORE
+    %% Gasless Transaction Flow
+    CONTRACT --> GASLESS
+    GASLESS --> FUNDING_WALLET
+    FUNDING_WALLET --> STELLAR
+    
+    %% Data Storage Flow
+    CREATE_API --> FIRESTORE
+    FIREBASE_STORAGE --> IMAGES
     FIRESTORE --> USERDATA
     FIRESTORE --> WALLETDATA
     
-    FUNDING --> STELLAR
-    USERS --> FIRESTORE
+    %% Smart Contract Integration
+    CONTRACT --> CRUD
+    CONTRACT --> LOGS
+    CONTRACT --> STATS
+    CONTRACT --> STELLAR
+    
+    %% API Integration
+    UI --> API
+    GET_API --> CONTRACT
+    FUNDING_API --> STELLAR
+    USERS_API --> FIRESTORE
+    
+    style GASLESS fill:#e1f5fe
+    style FUNDING_WALLET fill:#e8f5e8
+    style CONTRACT fill:#fff3e0
+    style AUTH fill:#f3e5f5
 ```
 
 ## Donation Workflow
@@ -189,58 +234,202 @@ sequenceDiagram
     DA-->>D: Impact Dashboard
 ```
 
-## Needs Management Workflow
+## Smart Contract Need Management Workflow
 
 ```mermaid
 sequenceDiagram
     participant B as Beneficiary
     participant DA as Donaria App
-    participant FB as Firebase
+    participant FB as Firebase Storage
+    participant SC as Smart Contract
+    participant FW as Funding Wallet
     participant ST as Stellar Network
-    participant V as Verification System
     participant D as Donors
     
-    Note over B,D: Need Creation & Verification
-    B->>DA: Create Need Request
-    DA->>B: Request Documentation
-    B->>DA: Submit Identity & Need Proof
-    DA->>FB: Store Need Data
-    DA->>V: Queue for Verification
-    V->>V: Review Documentation
-    V->>FB: Update Verification Status
-    FB-->>DA: Verification Complete
-    DA-->>B: Need Approved & Published
+    Note over B,D: Gasless Need Creation
+    B->>DA: Social Login (Google/X/Instagram)
+    DA->>DA: Auto-Generate Wallet + PIN
+    DA->>FW: Fund User Wallet (1 XLM)
     
-    Note over B,D: Need Visibility & Discovery
-    DA->>FB: Publish to Needs Feed
+    B->>DA: Create Need Request Form
+    B->>DA: Upload Evidence Images
+    DA->>FB: Store Images with Report ID
+    FB-->>DA: Return Image URLs
+    
+    Note over B,D: Smart Contract Deployment
+    DA->>FW: Use Platform Wallet for Gas
+    FW->>SC: Create Need Report (Gasless for User)
+    SC->>SC: Generate Unique Report ID
+    SC->>SC: Store: Title, Description, Location, Category, Amount, Images
+    SC->>SC: Log: Creation Event with Timestamp
+    SC-->>DA: Return Report ID
+    DA-->>B: Need Published (ID: 1)
+    
+    Note over B,D: Transparent Discovery
     D->>DA: Browse Needs
-    DA->>FB: Fetch Verified Needs
-    FB-->>DA: Active Needs List
-    DA-->>D: Display Available Needs
+    DA->>SC: Query Active Reports
+    SC-->>DA: Return Verified Reports + Stats
+    DA-->>D: Display: Title, Progress, Images, Verification Status
     
-    Note over B,D: Donation Reception & Tracking
-    D->>ST: Send Donation
-    ST->>B: Receive Funds
-    ST-->>DA: Transaction Event
-    DA->>FB: Update Need Progress
-    DA->>B: Notify Funds Received
-    DA->>DA: Calculate Remaining Need
+    Note over B,D: Real-Time Updates
+    D->>ST: Send Donation to Beneficiary
+    ST->>B: Funds Received
     
-    alt Need Fully Funded
-        DA->>FB: Mark Need as Complete
-        DA->>B: Notify Goal Achieved
-        DA->>D: Notify Impact Success
-    else Need Partially Funded
-        DA->>FB: Update Progress
-        DA->>DA: Continue Showing Need
+    Note over B,D: Admin Verification (Gasless)
+    DA->>FW: Admin Wallet Signs
+    FW->>SC: Update Status (pending → verified)
+    SC->>SC: Log: Status Change + Admin Notes
+    SC-->>DA: Verification Complete
+    DA->>B: Notify: Need Verified
+    DA->>D: Notify: Ready for Donations
+    
+    Note over B,D: Immutable Transparency
+    D->>DA: Check Impact & History
+    DA->>SC: Get Change Log for Report
+    SC-->>DA: Return: All Changes + Timestamps + Actors
+    DA->>SC: Get Platform Statistics
+    SC-->>DA: Return: Total Reports, Amounts, Status Distribution
+    DA-->>D: Show: Complete Audit Trail
+    
+    Note over B,D: Zero-Fee Updates
+    B->>DA: Update Need Information
+    DA->>FW: Platform Sponsors Gas
+    FW->>SC: Update Report (with Change Reason)
+    SC->>SC: Log: Field Changes + Old/New Values
+    SC-->>DA: Update Successful
+    DA-->>B: Changes Saved to Blockchain
+```
+
+## 🚀 Gasless Transaction System
+
+### How App-Sponsored Transactions Work
+
+Donaria implements a revolutionary **gasless transaction system** where users never pay blockchain fees, making humanitarian aid accessible to everyone regardless of their cryptocurrency knowledge or financial capacity.
+
+#### 🔐 **Technical Implementation**
+
+```mermaid
+flowchart LR
+    subgraph UserLayer [User Experience]
+        USER[User Action]
+        SIGNIN[Social Sign-In]
+        PIN[PIN Authentication]
     end
     
-    Note over B,D: Reporting & Transparency
-    B->>DA: Submit Impact Report
-    DA->>FB: Store Impact Data
-    DA->>D: Share Impact Updates
-    DA->>ST: Link to Blockchain Records
+    subgraph AppLayer [App Infrastructure]
+        PLATFORM[Platform Wallet]
+        SECRET[STELLAR_FUNDING_SECRET]
+        SPONSOR[Transaction Sponsor]
+    end
+    
+    subgraph Blockchain [Stellar Network]
+        CONTRACT[Smart Contract]
+        STELLAR[Stellar Ledger]
+        FEES[Gas Fees]
+    end
+    
+    USER --> SIGNIN
+    SIGNIN --> PIN
+    PIN --> PLATFORM
+    PLATFORM --> SECRET
+    SECRET --> SPONSOR
+    SPONSOR --> CONTRACT
+    CONTRACT --> STELLAR
+    SPONSOR --> FEES
+    
+    style SPONSOR fill:#e8f5e8
+    style FEES fill:#ffebee
+    style USER fill:#e3f2fd
 ```
+
+#### 💡 **Key Benefits**
+
+**For Beneficiaries:**
+- ✅ **Zero Barrier Entry**: Create need reports without owning cryptocurrency
+- ✅ **Immediate Access**: Start using the platform instantly after social login
+- ✅ **Focus on Need**: Concentrate on humanitarian crisis, not technical complexity
+- ✅ **Global Accessibility**: Available worldwide without local crypto infrastructure
+
+**For Donors:**
+- ✅ **Simplified Giving**: Donate without understanding blockchain fees
+- ✅ **Maximum Impact**: 100% of donation reaches beneficiaries
+- ✅ **Trust & Transparency**: All transactions publicly verifiable on blockchain
+- ✅ **Micro-Donations**: Support causes with any amount, no minimum fees
+
+**For the Platform:**
+- ✅ **Predictable Costs**: Fixed operational expenses for transaction processing
+- ✅ **User Retention**: Eliminate friction that causes user drop-off
+- ✅ **Scalable Model**: Sustainable economics as user base grows
+- ✅ **Regulatory Compliance**: Simplified compliance without user-to-user crypto transfers
+
+#### 🔧 **Security Model**
+
+```typescript
+// User Authentication: Private key proves ownership
+const userAuth = {
+  privateKey: userPrivateKey,  // User controls identity
+  authorization: true          // User approves action
+}
+
+// App Sponsorship: Platform wallet pays fees
+const appSponsorship = {
+  fundingWallet: STELLAR_FUNDING_SECRET,  // Platform pays gas
+  gasless: true,                          // User pays nothing
+  control: 'platform'                     // App manages costs
+}
+
+// Result: User-controlled + Platform-sponsored
+const transaction = {
+  creator: userPublicKey,      // User owns the action
+  sponsor: platformWallet,     // Platform pays the fees
+  immutable: true,            // Permanently recorded
+  transparent: true           // Publicly verifiable
+}
+```
+
+#### 📊 **Economic Sustainability**
+
+**Cost Structure:**
+- **Average Transaction Cost**: ~$0.00001 USD per smart contract call
+- **Daily Volume Estimate**: 1,000 need reports + 5,000 updates = ~$0.06/day
+- **Monthly Operating Cost**: ~$1.80 for transaction fees
+- **Annual Blockchain Costs**: ~$22 for unlimited humanitarian aid operations
+
+**Revenue Model:**
+- Optional platform fees on large donations (>$1,000)
+- Premium features for institutional donors
+- API access for humanitarian organizations
+- Partnership revenue with verified aid organizations
+
+This gasless system removes the **biggest barrier** to blockchain adoption in humanitarian aid: the requirement to understand and pay transaction fees. Users focus on what matters - helping others or getting help - while the platform handles all technical complexity.
+
+## 📋 Smart Contract Integration
+
+### Contract Details
+- **Contract Address**: `CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW`
+- **Network**: Stellar Testnet (soon Mainnet)
+- **Language**: Rust (Soroban)
+- **Features**: CRUD operations, change logging, admin controls, statistics
+
+### Live Contract Statistics
+```json
+{
+  "total_reports": 1,
+  "pending_reports": 1,
+  "verified_reports": 0,
+  "funded_reports": 0,
+  "completed_reports": 0,
+  "total_amount_needed": 5000,
+  "total_amount_raised": 0
+}
+```
+
+### Transparency Features
+- **Immutable Records**: All need reports permanently stored on blockchain
+- **Change Logging**: Every modification tracked with timestamp and reason
+- **Public Verification**: Anyone can verify data using blockchain explorers
+- **Admin Controls**: Transparent verification and status update system
+- **Real-time Statistics**: Live platform metrics available to all users
 
 ## Getting Started
 
@@ -285,6 +474,9 @@ sequenceDiagram
    NEXT_PUBLIC_STELLAR_NETWORK=testnet
    STELLAR_FUNDING_SECRET=your_funding_account_secret
    
+   # Smart Contract Configuration
+   NEED_REPORTS_CONTRACT_ID=your_deployed_contract_id
+   
    # Social Authentication
    INSTAGRAM_CLIENT_ID=your_instagram_client_id
    INSTAGRAM_CLIENT_SECRET=your_instagram_client_secret
@@ -296,7 +488,15 @@ sequenceDiagram
    npm run dev
    ```
 
-5. **Open your browser**
+5. **Deploy Smart Contract (Optional for Development)**
+   ```bash
+   cd contracts-soroban/need-reports/contracts/need-reports
+   make build           # Build the smart contract
+   make fund-alice      # Fund deployer account
+   make deploy-testnet  # Deploy to Stellar testnet
+   ```
+
+6. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
 ### Available Scripts
@@ -306,6 +506,36 @@ npm run dev          # Start development server
 npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint checks
+
+# Smart Contract Commands
+cd contracts-soroban/need-reports/contracts/need-reports
+make build           # Build Rust smart contract
+make test            # Run contract tests
+make deploy-testnet  # Deploy to Stellar testnet
+make fund-alice      # Fund deployment account
+```
+
+### Smart Contract Development
+
+The platform includes a complete Soroban smart contract system for transparent need management:
+
+```bash
+# Navigate to smart contract directory
+cd contracts-soroban/need-reports/contracts/need-reports
+
+# Build the contract
+make build
+
+# Run tests
+cargo test
+
+# Deploy to testnet
+make setup-network    # Setup Stellar testnet
+make fund-alice      # Fund deployment account
+make deploy-testnet  # Deploy contract
+
+# Test contract functions
+stellar contract invoke --id CONTRACT_ID --source alice --network testnet -- get_stats
 ```
 
 ## User Roles & Capabilities
