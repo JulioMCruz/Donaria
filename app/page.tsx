@@ -8,7 +8,7 @@ export default function DonariaLandingPage() {
 
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 bg-white dark:bg-gray-900">
-          <div className="container px-4 md:px-6 text-center">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 text-center">
             <div className="space-y-4">
               <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none text-gray-900 dark:text-white">
                 Connecting Verified Needs with Direct Aid.
@@ -18,7 +18,7 @@ export default function DonariaLandingPage() {
                 contribution reaches those who need it most, transparently and without complications.
               </p>
             </div>
-            <div className="mt-8 flex flex-col gap-4 min-[400px]:flex-row justify-center">
+            <div className="mt-8 flex flex-col gap-4 min-[400px]:flex-row justify-center items-center">
               <Link href="/login">
                 <Button size="lg" className="bg-teal-500 hover:bg-teal-600 text-white">
                   Donate Now
@@ -34,7 +34,7 @@ export default function DonariaLandingPage() {
         </section>
 
         <section id="features" className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-900">
-          <div className="container px-4 md:px-6">
+          <div className="max-w-7xl mx-auto px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <div className="inline-block rounded-lg bg-teal-100 px-3 py-1 text-sm text-teal-800 dark:bg-teal-900/50 dark:text-teal-300">
@@ -122,7 +122,7 @@ export default function DonariaLandingPage() {
         </section>
 
         <section id="impact" className="w-full py-12 md:py-24 lg:py-32 bg-white dark:bg-gray-900">
-          <div className="container px-4 md:px-6">
+          <div className="max-w-7xl mx-auto px-4 md:px-6">
             <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
               <div className="space-y-4">
                 <div className="inline-block rounded-lg bg-teal-100 px-3 py-1 text-sm text-teal-800 dark:bg-teal-900/50 dark:text-teal-300">
@@ -168,7 +168,7 @@ export default function DonariaLandingPage() {
         </section>
 
         <section className="w-full py-12 md:py-24 lg:py-32 border-t bg-gray-100 dark:bg-gray-900">
-          <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
+          <div className="max-w-7xl mx-auto grid items-center justify-center gap-4 px-4 text-center md:px-6">
             <div className="space-y-3">
               <h2 className="text-3xl font-bold tracking-tighter md:text-4xl">Join Donaria Today</h2>
               <p className="mx-auto max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">

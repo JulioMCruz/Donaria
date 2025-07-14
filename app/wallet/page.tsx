@@ -169,11 +169,11 @@ export default function WalletPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
         <div className="container mx-auto px-4 py-8">
-          <div className="mb-8">
+          <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Your Donaria Wallet
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               Manage your Stellar wallet and view your XLM balance. Your wallet is used for transparent donations on the blockchain.
             </p>
           </div>
