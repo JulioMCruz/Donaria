@@ -1,0 +1,23 @@
+{
+  "name": "donaria-soroban-contracts",
+  "version": "1.0.0",
+  "description": "Soroban smart contracts for Donaria humanitarian aid platform",
+  "scripts": {
+    "build": "cd need-reports && stellar contract build",
+    "test": "cd need-reports && cargo test",
+    "deploy:testnet": "cd need-reports && stellar contract deploy --wasm target/wasm32-unknown-unknown/release/need_reports.wasm --source alice --network testnet",
+    "setup:testnet": "stellar network add --global testnet --rpc-url https://soroban-testnet.stellar.org:443 --network-passphrase 'Test SDF Network ; September 2015'",
+    "fund:alice": "stellar keys fund alice --network testnet",
+    "invoke": "cd need-reports && stellar contract invoke --id $CONTRACT_ID --source alice --network testnet"
+  },
+  "keywords": [
+    "soroban",
+    "stellar",
+    "smart-contracts",
+    "humanitarian-aid",
+    "blockchain",
+    "transparency"
+  ],
+  "author": "Donaria Team",
+  "license": "MIT"
+}
