@@ -17,14 +17,25 @@ import { uploadReportImages, generateTempReportId } from "@/lib/firebase-storage
 import { toast } from "sonner"
 import { PinProtectedAction } from "@/components/pin-protected-action"
 
+interface TransactionResult {
+  reportId: number
+  message: string
+  contractId: string
+  userAddress: string
+  transactionHash?: string
+}
+
 export default function CreateNeedPage() {
   const { wallet, connectWallet } = useWallet()
   const { user } = useAuth()
+  const router = useRouter()
   const [images, setImages] = useState<File[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [userPublicKey, setUserPublicKey] = useState<string>("")
   const [loadingWallet, setLoadingWallet] = useState(false)
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false)
+  const [transactionResult, setTransactionResult] = useState<TransactionResult | null>(null)
   
   // Form data
   const [title, setTitle] = useState("")
@@ -187,7 +198,16 @@ export default function CreateNeedPage() {
 
       if (result.success) {
         console.log('✅ Need report created successfully!')
-        toast.success("Need report created successfully!")
+        
+        // Store transaction result and show success dialog
+        setTransactionResult({
+          reportId: result.reportId,
+          message: result.message,
+          contractId: result.contractId,
+          userAddress: result.userAddress,
+          transactionHash: result.transactionHash
+        })
+        setShowSuccessDialog(true)
         
         // Reset form
         setTitle("")
@@ -198,7 +218,6 @@ export default function CreateNeedPage() {
         setImages([])
         setImagePreviews([])
         
-        // TODO: Redirect to report details or dashboard
         console.log("Report created with ID:", result.reportId)
       } else {
         console.error('❌ API returned error:', result.error)
@@ -432,6 +451,103 @@ export default function CreateNeedPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Success Dialog */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CheckCircle className="h-6 w-6 text-green-500" />
+              Report Created Successfully!
+            </DialogTitle>
+            <DialogDescription>
+              Your emergency report has been successfully created and submitted to the blockchain.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {transactionResult && (
+              <>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <span className="text-sm font-medium">Report ID:</span>
+                    <span className="text-sm font-mono text-green-700 dark:text-green-400">
+                      #{transactionResult.reportId}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <span className="text-sm font-medium">Status:</span>
+                    <span className="text-sm text-blue-700 dark:text-blue-400">
+                      {transactionResult.message.includes('app-sponsored') ? 'App-Sponsored' : 'User-Paid'}
+                    </span>
+                  </div>
+                  
+                  <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <span className="text-sm font-medium block mb-2">Wallet Address:</span>
+                    <span className="text-xs font-mono text-gray-600 dark:text-gray-400 break-all">
+                      {transactionResult.userAddress}
+                    </span>
+                  </div>
+                  
+                  <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                    <span className="text-sm font-medium block mb-2">Smart Contract:</span>
+                    <span className="text-xs font-mono text-purple-700 dark:text-purple-400 break-all">
+                      {transactionResult.contractId}
+                    </span>
+                  </div>
+
+                  {transactionResult.transactionHash && (
+                    <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                      <span className="text-sm font-medium block mb-2">Transaction Hash:</span>
+                      <span className="text-xs font-mono text-orange-700 dark:text-orange-400 break-all">
+                        {transactionResult.transactionHash}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+          
+          <div className="flex flex-col gap-3">
+            <Button 
+              onClick={() => {
+                setShowSuccessDialog(false)
+                router.push('/dashboard/beneficiary')
+              }}
+              className="w-full"
+            >
+              <Home className="mr-2 h-4 w-4" />
+              Go to Dashboard
+            </Button>
+            
+            {transactionResult?.transactionHash && (
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  window.open(
+                    `https://stellar.expert/explorer/testnet/tx/${transactionResult.transactionHash}`, 
+                    '_blank'
+                  )
+                }}
+                className="w-full"
+              >
+                <ExternalLink className="mr-2 h-4 w-4" />
+                View on Stellar Explorer
+              </Button>
+            )}
+            
+            <Button 
+              variant="ghost" 
+              onClick={() => setShowSuccessDialog(false)}
+              className="w-full"
+            >
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

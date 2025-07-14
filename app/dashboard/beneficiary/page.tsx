@@ -1,37 +1,80 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
+import { PlusCircle, Loader2, RefreshCw } from "lucide-react"
 import { NeedCard } from "@/app/components/beneficiary/need-card"
+import { useAuth } from "@/contexts/AuthContext"
+import { useWallet } from "@/contexts/WalletContext"
+import { useState, useEffect } from "react"
+import { toast } from "sonner"
 
-// Mock data for demonstration
-const reportedNeeds = [
-  {
-    id: "1",
-    title: "Urgent Shelter for Flood Victims",
-    amountNeeded: 5000,
-    amountRaised: 4500,
-    status: "Funded",
-    imageUrl: "/flooded_houses.png",
-  },
-  {
-    id: "2",
-    title: "Medical Supplies for Local Clinic",
-    amountNeeded: 2500,
-    amountRaised: 1200,
-    status: "Verified",
-    imageUrl: "/medical-clinic-waiting-area.png",
-  },
-  {
-    id: "3",
-    title: "Clean Water Distribution",
-    amountNeeded: 1000,
-    amountRaised: 150,
-    status: "Pending",
-    imageUrl: "/placeholder-8ospr.png",
-  },
-]
+type Need = {
+  id: string
+  title: string
+  description: string
+  location: string
+  category: string
+  amountNeeded: number
+  amountRaised: number
+  status: "Pending" | "Verified" | "Funded"
+  imageUrl: string
+  imageUrls: string[]
+  creator: string
+  createdAt: number
+  updatedAt: number
+  verificationNotes: string
+}
 
 export default function BeneficiaryDashboard() {
+  const { user } = useAuth()
+  const { wallet } = useWallet()
+  const [reports, setReports] = useState<Need[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Function to fetch user reports from the API
+  const fetchReports = async () => {
+    if (!user || !wallet?.publicKey) {
+      console.log('⏳ User or wallet not ready yet')
+      return
+    }
+
+    try {
+      setLoading(true)
+      setError(null)
+      console.log('🔍 Fetching reports for user:', wallet.publicKey.substring(0, 10) + '...')
+
+      const response = await fetch(`/api/soroban/need-reports/user?userAddress=${wallet.publicKey}`)
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        console.log(`✅ Loaded ${data.reports.length} reports`)
+        setReports(data.reports)
+      } else {
+        console.error('❌ Failed to fetch reports:', data.error)
+        setError(data.error || 'Failed to fetch reports')
+        toast.error('Failed to load your reports')
+      }
+    } catch (error: any) {
+      console.error('❌ Error fetching reports:', error)
+      setError('Failed to load reports')
+      toast.error('Failed to load your reports')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Load reports when component mounts and when user/wallet changes
+  useEffect(() => {
+    fetchReports()
+  }, [user, wallet?.publicKey])
+
+  // Manual refresh function
+  const handleRefresh = () => {
+    fetchReports()
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-950">
 
@@ -39,26 +82,64 @@ export default function BeneficiaryDashboard() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-2xl md:text-3xl font-bold mb-4">Your Reported Needs</h1>
-            <Link href="/dashboard/beneficiary/create-need">
-              <Button size="lg">
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Create New Report
+            <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
+              <Link href="/dashboard/beneficiary/create-need">
+                <Button size="lg">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Create New Report
+                </Button>
+              </Link>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                onClick={handleRefresh}
+                disabled={loading}
+              >
+                <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                Refresh
               </Button>
-            </Link>
+            </div>
           </div>
 
-          {reportedNeeds.length > 0 ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {reportedNeeds.map((need) => (
-                <NeedCard key={need.id} need={need} />
-              ))}
+          {loading && reports.length === 0 ? (
+            <div className="text-center py-16">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+              <h2 className="text-xl font-semibold">Loading your reports...</h2>
+              <p className="text-muted-foreground mt-2">Fetching data from the blockchain</p>
             </div>
+          ) : error ? (
+            <div className="text-center py-16 border-2 border-dashed border-red-200 dark:border-red-800 rounded-lg">
+              <h2 className="text-xl font-semibold text-red-600 dark:text-red-400">Error loading reports</h2>
+              <p className="text-muted-foreground mt-2">{error}</p>
+              <Button onClick={handleRefresh} className="mt-4">
+                Try Again
+              </Button>
+            </div>
+          ) : reports.length > 0 ? (
+            <>
+              <div className="flex justify-between items-center mb-4">
+                <p className="text-sm text-muted-foreground">
+                  {reports.length} report{reports.length !== 1 ? 's' : ''} found
+                </p>
+                {loading && (
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Refreshing...
+                  </div>
+                )}
+              </div>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {reports.map((need) => (
+                  <NeedCard key={need.id} need={need} />
+                ))}
+              </div>
+            </>
           ) : (
             <div className="text-center py-16 border-2 border-dashed rounded-lg">
-              <h2 className="text-xl font-semibold">No reports found.</h2>
-              <p className="text-muted-foreground mt-2">Get started by creating a new emergency report.</p>
+              <h2 className="text-xl font-semibold">No reports found</h2>
+              <p className="text-muted-foreground mt-2">Get started by creating your first emergency report.</p>
               <Link href="/dashboard/beneficiary/create-need" className="mt-4 inline-block">
-                <Button>Create New Report</Button>
+                <Button>Create Your First Report</Button>
               </Link>
             </div>
           )}
