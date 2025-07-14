@@ -37,10 +37,10 @@ export default function BeneficiaryDashboard() {
 
       <main className="flex-1 p-4 md:p-8">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold">Your Reported Needs</h1>
+          <div className="text-center mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold mb-4">Your Reported Needs</h1>
             <Link href="/dashboard/beneficiary/create-need">
-              <Button>
+              <Button size="lg">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Create New Report
               </Button>

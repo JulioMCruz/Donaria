@@ -47,7 +47,7 @@ export default function CreateNeedPage() {
           </Link>
         </div>
         <Card>
-          <CardHeader>
+          <CardHeader className="text-center">
             <CardTitle className="text-2xl">Create a New Emergency Report</CardTitle>
             <CardDescription>
               Please provide as much detail as possible. Your report will be reviewed and verified.
