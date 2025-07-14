@@ -1,30 +1,124 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { execSync } from 'child_process'
-import { join } from 'path'
+import { 
+  Contract, 
+  SorobanRpc, 
+  Keypair, 
+  Networks, 
+  TransactionBuilder,
+  Operation,
+  Address,
+  nativeToScVal,
+  scValToNative
+} from '@stellar/stellar-sdk'
 
 const NEED_REPORTS_CONTRACT_ID = process.env.NEED_REPORTS_CONTRACT_ID || 'CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW'
-const CONTRACTS_DIR = '/Users/osx/Projects/Stellar/mvp02/Donaria/contracts-soroban/need-reports'
 
-// Helper function to run stellar commands
-function runStellarCommand(args: string[]): Promise<string> {
-  return new Promise((resolve, reject) => {
-    console.log('🔧 Running stellar command:', 'stellar', args.join(' '))
+// Initialize Soroban RPC server
+const server = new SorobanRpc.Server('https://soroban-testnet.stellar.org')
+
+// Helper function to call contract methods
+async function callContract(contractId: string, method: string, args: any[] = [], sourceSecret?: string) {
+  try {
+    console.log(`🔧 Calling contract method: ${method}`)
     
-    try {
-      const result = execSync(`stellar ${args.join(' ')}`, {
-        cwd: CONTRACTS_DIR,
-        encoding: 'utf8',
-        timeout: 30000,
-        stdio: ['pipe', 'pipe', 'pipe']
+    const contract = new Contract(contractId)
+    
+    // For read-only operations, we can use simulation
+    if (!sourceSecret && (method.startsWith('get_') || method.startsWith('query_'))) {
+      console.log('📖 Using simulation for read-only operation')
+      
+      // Create a dummy source account for simulation
+      const dummyKeypair = Keypair.random()
+      
+      // Build the operation
+      const operation = contract.call(method, ...args)
+      
+      // Simulate the transaction
+      const account = await server.getAccount(dummyKeypair.publicKey()).catch(() => {
+        // If account doesn't exist, create a dummy account object
+        return {
+          accountId: () => dummyKeypair.publicKey(),
+          sequenceNumber: () => '0',
+          getKeypair: () => dummyKeypair
+        }
       })
       
-      console.log('✅ Command completed successfully')
-      resolve(result.trim())
-    } catch (error: any) {
-      console.error('❌ Command failed:', error)
-      reject(error)
+      const txBuilder = new TransactionBuilder(account as any, {
+        fee: '100',
+        networkPassphrase: Networks.TESTNET,
+      }).addOperation(operation).setTimeout(30)
+      
+      const tx = txBuilder.build()
+      
+      const simulation = await server.simulateTransaction(tx)
+      
+      if (simulation.error) {
+        throw new Error(`Simulation failed: ${simulation.error}`)
+      }
+      
+      if (simulation.result?.retval) {
+        return scValToNative(simulation.result.retval)
+      }
+      
+      return null
     }
-  })
+    
+    // For write operations, we need a real source account
+    if (sourceSecret) {
+      console.log('✍️ Executing transaction with source account')
+      
+      const sourceKeypair = Keypair.fromSecret(sourceSecret)
+      const sourceAccount = await server.getAccount(sourceKeypair.publicKey())
+      
+      const operation = contract.call(method, ...args)
+      
+      const txBuilder = new TransactionBuilder(sourceAccount, {
+        fee: '100',
+        networkPassphrase: Networks.TESTNET,
+      }).addOperation(operation).setTimeout(30)
+      
+      const tx = txBuilder.build()
+      tx.sign(sourceKeypair)
+      
+      const result = await server.sendTransaction(tx)
+      
+      if (result.status === 'ERROR') {
+        throw new Error(`Transaction failed: ${result.errorResult}`)
+      }
+      
+      // Wait for confirmation
+      if (result.status === 'PENDING') {
+        const hash = result.hash
+        let attempts = 0
+        while (attempts < 10) {
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          const txResult = await server.getTransaction(hash)
+          if (txResult.status === 'SUCCESS') {
+            if (txResult.returnValue) {
+              return scValToNative(txResult.returnValue)
+            }
+            return null
+          } else if (txResult.status === 'FAILED') {
+            throw new Error(`Transaction failed: ${txResult.resultXdr}`)
+          }
+          attempts++
+        }
+        throw new Error('Transaction timeout')
+      }
+      
+      if (result.returnValue) {
+        return scValToNative(result.returnValue)
+      }
+      
+      return null
+    }
+    
+    throw new Error('No source secret provided for contract call')
+    
+  } catch (error: any) {
+    console.error('❌ Contract call failed:', error)
+    throw error
+  }
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -43,32 +137,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     console.log('👤 Fetching reports for user:', userAddress.substring(0, 10) + '...')
     
-    // Call the smart contract to get user reports
-    // Note: Read-only operations still require a source account for gas estimation
-    const STELLAR_FUNDING_SECRET = process.env.STELLAR_FUNDING_SECRET
-    if (!STELLAR_FUNDING_SECRET) {
-      return res.status(500).json({ error: 'STELLAR_FUNDING_SECRET not configured' })
-    }
-    
-    const result = await runStellarCommand([
-      'contract', 'invoke',
-      '--id', NEED_REPORTS_CONTRACT_ID,
-      '--source', STELLAR_FUNDING_SECRET,
-      '--network', 'testnet',
-      '--',
-      'get_user_reports',
-      '--user', userAddress
-    ])
+    // Call the smart contract to get user reports using Stellar SDK
+    const userAddressParam = Address.fromString(userAddress)
+    const result = await callContract(
+      NEED_REPORTS_CONTRACT_ID, 
+      'get_user_reports', 
+      [nativeToScVal(userAddressParam, { type: 'address' })]
+    )
     
     console.log('📋 Raw contract response:', result)
     
     // Parse the response
     let reports = []
     try {
-      if (result && result !== '[]') {
-        // The result should be a JSON array of reports
-        const parsedResult = JSON.parse(result)
-        reports = Array.isArray(parsedResult) ? parsedResult : [parsedResult]
+      if (result) {
+        // The result is already parsed by scValToNative
+        reports = Array.isArray(result) ? result : [result]
         
         // Transform the reports to match the frontend interface
         reports = reports.map((report: any) => ({
