@@ -42,8 +42,8 @@ export function DonorNeedCard({ need }: DonorNeedCardProps) {
         <div className="space-y-2">
           <Progress value={progress} />
           <div className="flex justify-between text-sm">
-            <span className="font-semibold">${need.amountRaised.toLocaleString()}</span>
-            <span className="text-muted-foreground">raised of ${need.amountNeeded.toLocaleString()}</span>
+            <span className="font-semibold">${(need.amountRaised / 100).toLocaleString()}</span>
+            <span className="text-muted-foreground">raised of ${(need.amountNeeded / 100).toLocaleString()}</span>
           </div>
         </div>
       </CardContent>
