@@ -49,14 +49,75 @@ interface DonorNeedDetails {
   comments: Array<{ id: string; author: string; date: string; text: string; avatarUrl: string | null }>
 }
 
+interface UserProfile {
+  id?: string
+  firebaseUid: string
+  email?: string
+  name?: string
+  avatar?: string
+  provider: string
+  walletAddress?: string
+  createdAt?: string
+  updatedAt?: string
+}
+
 export default function DonorNeedDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params)
   const [needDetails, setNeedDetails] = useState<DonorNeedDetails | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [realDonations, setRealDonations] = useState<Array<{ id: string; amount: number; wallet: string; date: string; transactionHash?: string }>>([])
+  const [donationsLoading, setDonationsLoading] = useState(false)
+
+  // Function to fetch real donations for the need
+  const fetchRealDonations = async (needId: string) => {
+    try {
+      setDonationsLoading(true)
+      console.log('💰 Fetching real donations for need:', needId)
+      
+      const response = await fetch(`/api/donations/by-need?needId=${needId}`)
+      const data = await response.json()
+      
+      if (response.ok && data.success) {
+        console.log(`✅ Loaded ${data.donations.length} real donations`)
+        setRealDonations(data.donations)
+      } else {
+        console.error('❌ Failed to fetch donations:', data.error)
+        setRealDonations([])
+      }
+    } catch (error) {
+      console.error('❌ Error fetching donations:', error)
+      setRealDonations([])
+    } finally {
+      setDonationsLoading(false)
+    }
+  }
+
+  // Function to fetch user data by wallet address
+  const fetchUserData = async (walletAddress: string): Promise<UserProfile | null> => {
+    try {
+      console.log('👤 Fetching user data for wallet:', walletAddress.substring(0, 10) + '...')
+      const response = await fetch(`/api/users/by-wallet?walletAddress=${walletAddress}`)
+      const data = await response.json()
+
+      if (response.ok && data.exists) {
+        console.log('✅ User data found:', data.user.name || 'No name')
+        return data.user
+      } else {
+        console.log('⚠️ No user data found for wallet')
+        return null
+      }
+    } catch (error) {
+      console.error('❌ Error fetching user data:', error)
+      return null
+    }
+  }
 
   // Function to transform API data to donor detail format
-  const transformApiNeedToDetails = (apiNeed: ApiNeed): DonorNeedDetails => {
+  const transformApiNeedToDetails = async (apiNeed: ApiNeed): Promise<DonorNeedDetails> => {
+    // Fetch user data for the creator
+    const userData = await fetchUserData(apiNeed.creator)
+    
     return {
       id: apiNeed.id,
       title: apiNeed.title,
@@ -66,8 +127,8 @@ export default function DonorNeedDetailPage({ params }: { params: Promise<{ id: 
       amountRaised: apiNeed.amountRaised,
       walletAddress: apiNeed.creator,
       status: apiNeed.status,
-      author: apiNeed.creator.substring(0, 10) + '...', // Truncate public key for display
-      authorAvatarUrl: "/beneficiary-avatar.png", // Default avatar
+      author: userData?.name || apiNeed.creator.substring(0, 10) + '...', // Use real name or truncated wallet
+      authorAvatarUrl: userData?.avatar || "/beneficiary-avatar.png", // Use real avatar or default
       reputationScore: 92, // Default reputation score
       images: apiNeed.imageUrls && apiNeed.imageUrls.length > 0 ? apiNeed.imageUrls : [apiNeed.imageUrl],
       // Mock data for donations, change history, and comments (these would need separate API endpoints)
@@ -103,37 +164,41 @@ export default function DonorNeedDetailPage({ params }: { params: Promise<{ id: 
     }
   }
 
+  // Function to fetch need data
+  const fetchNeed = async () => {
+    if (!resolvedParams.id) return
+
+    try {
+      setLoading(true)
+      setError(null)
+      console.log('🔍 Fetching need data for donor view, ID:', resolvedParams.id)
+
+      const response = await fetch(`/api/soroban/need-reports/get?reportId=${resolvedParams.id}`)
+      const data = await response.json()
+
+      if (response.ok && data.success && data.reports) {
+        const transformedNeed = await transformApiNeedToDetails(data.reports)
+        console.log('✅ Need data loaded for donor view:', transformedNeed)
+        setNeedDetails(transformedNeed)
+        
+        // Fetch real donations for this need
+        await fetchRealDonations(resolvedParams.id)
+      } else {
+        console.error('❌ Failed to fetch need:', data.error)
+        setError(data.error || 'Failed to fetch need data')
+        toast.error('Failed to load need data')
+      }
+    } catch (error: any) {
+      console.error('❌ Error fetching need:', error)
+      setError('Failed to load need data')
+      toast.error('Failed to load need data')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // Fetch need data on component mount
   useEffect(() => {
-    const fetchNeed = async () => {
-      if (!resolvedParams.id) return
-
-      try {
-        setLoading(true)
-        setError(null)
-        console.log('🔍 Fetching need data for donor view, ID:', resolvedParams.id)
-
-        const response = await fetch(`/api/soroban/need-reports/get?reportId=${resolvedParams.id}`)
-        const data = await response.json()
-
-        if (response.ok && data.success && data.reports) {
-          const transformedNeed = transformApiNeedToDetails(data.reports)
-          console.log('✅ Need data loaded for donor view:', transformedNeed)
-          setNeedDetails(transformedNeed)
-        } else {
-          console.error('❌ Failed to fetch need:', data.error)
-          setError(data.error || 'Failed to fetch need data')
-          toast.error('Failed to load need data')
-        }
-      } catch (error: any) {
-        console.error('❌ Error fetching need:', error)
-        setError('Failed to load need data')
-        toast.error('Failed to load need data')
-      } finally {
-        setLoading(false)
-      }
-    }
-
     fetchNeed()
   }, [resolvedParams.id])
 
@@ -213,7 +278,14 @@ export default function DonorNeedDetailPage({ params }: { params: Promise<{ id: 
               <ImageGallery images={needDetails.images} />
             </div>
             <div className="row-start-1 lg:row-auto">
-              <DonationInteractionCard need={needDetails} />
+              <DonationInteractionCard 
+                need={needDetails} 
+                onDonationComplete={() => {
+                  // Refresh the need data and donations after donation
+                  fetchNeed()
+                  fetchRealDonations(resolvedParams.id)
+                }}
+              />
             </div>
           </div>
 
@@ -226,7 +298,7 @@ export default function DonorNeedDetailPage({ params }: { params: Promise<{ id: 
                 <Tabs defaultValue="comments">
                   <TabsList className="grid w-full grid-cols-1 gap-1 sm:grid-cols-3">
                     <TabsTrigger value="comments">Comments ({needDetails.comments.length})</TabsTrigger>
-                    <TabsTrigger value="donations">Donations ({needDetails.donations.length})</TabsTrigger>
+                    <TabsTrigger value="donations">Donations ({realDonations.length})</TabsTrigger>
                     <TabsTrigger value="history">History ({needDetails.changeHistory.length})</TabsTrigger>
                   </TabsList>
                   <TabsContent value="comments" className="pt-6">
@@ -234,7 +306,14 @@ export default function DonorNeedDetailPage({ params }: { params: Promise<{ id: 
                     <CommentForm />
                   </TabsContent>
                   <TabsContent value="donations" className="pt-6">
-                    <DonationList donations={needDetails.donations} />
+                    {donationsLoading ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                        <span>Loading donations...</span>
+                      </div>
+                    ) : (
+                      <DonationList donations={realDonations} />
+                    )}
                   </TabsContent>
                   <TabsContent value="history" className="pt-6">
                     <ChangeHistoryList history={needDetails.changeHistory} />
