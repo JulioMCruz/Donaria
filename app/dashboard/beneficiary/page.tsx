@@ -30,13 +30,14 @@ export default function BeneficiaryDashboard() {
   const { user } = useAuth()
   const { wallet } = useWallet()
   const [reports, setReports] = useState<Need[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true) // Start with loading true
   const [error, setError] = useState<string | null>(null)
 
   // Function to fetch user reports from the API
   const fetchReports = async () => {
     if (!user || !wallet?.publicKey) {
-      console.log('⏳ User or wallet not ready yet')
+      console.log('⏳ User or wallet not ready yet, user:', !!user, 'publicKey:', !!wallet?.publicKey)
+      setLoading(false)
       return
     }
 
@@ -67,7 +68,12 @@ export default function BeneficiaryDashboard() {
 
   // Load reports when component mounts and when user/wallet changes
   useEffect(() => {
-    fetchReports()
+    console.log('🔄 useEffect triggered - user:', !!user, 'publicKey:', !!wallet?.publicKey)
+    if (user && wallet?.publicKey) {
+      fetchReports()
+    } else {
+      setLoading(false) // Stop loading if no user or wallet
+    }
   }, [user, wallet?.publicKey])
 
   // Manual refresh function
