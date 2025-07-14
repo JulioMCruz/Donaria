@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { execSync } from 'child_process'
+import { execSync, spawn } from 'child_process'
 import { writeFileSync, unlinkSync, existsSync } from 'fs'
 import { join } from 'path'
 
@@ -7,12 +7,67 @@ const NEED_REPORTS_CONTRACT_ID = process.env.NEED_REPORTS_CONTRACT_ID || 'CD4RXD
 const STELLAR_FUNDING_SECRET = process.env.STELLAR_FUNDING_SECRET
 const CONTRACTS_DIR = '/Users/osx/Projects/Stellar/mvp02/Donaria/contracts-soroban/need-reports'
 
-export async function POST(request: NextRequest) {
-  let userIdentityFile: string | null = null
-  let fundingIdentityFile: string | null = null
+// Helper function to run stellar commands with stdin input
+function runStellarCommand(args: string[], input?: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    console.log('🔧 Running stellar command:', 'stellar', args.join(' '))
+    const child = spawn('stellar', args, {
+      cwd: CONTRACTS_DIR,
+      stdio: ['pipe', 'pipe', 'pipe']
+    })
 
+    let stdout = ''
+    let stderr = ''
+
+    child.stdout.on('data', (data) => {
+      stdout += data.toString()
+    })
+
+    child.stderr.on('data', (data) => {
+      stderr += data.toString()
+    })
+
+    if (input) {
+      child.stdin.write(input + '\n')
+      child.stdin.end()
+    }
+
+    const timeout = setTimeout(() => {
+      child.kill()
+      reject(new Error('Command timed out after 30 seconds'))
+    }, 30000)
+
+    child.on('close', (code) => {
+      clearTimeout(timeout)
+      if (code === 0) {
+        console.log('✅ Command completed successfully')
+        resolve(stdout.trim())
+      } else {
+        console.error('❌ Command failed with code:', code)
+        console.error('❌ stdout:', stdout)
+        console.error('❌ stderr:', stderr)
+        reject(new Error(`Command failed with exit code ${code}: ${stderr || stdout}`))
+      }
+    })
+
+    child.on('error', (error) => {
+      clearTimeout(timeout)
+      console.error('❌ Spawn error:', error)
+      reject(error)
+    })
+  })
+}
+
+export async function POST(request: NextRequest) {
   try {
+    console.log('🚀 Need report API called')
+    
     const body = await request.json()
+    console.log('📝 Request body parsed:', {
+      ...body,
+      userPrivateKey: '[REDACTED]'
+    })
+    
     const {
       userPrivateKey,
       title,
@@ -24,110 +79,217 @@ export async function POST(request: NextRequest) {
     } = body
 
     if (!userPrivateKey || !title || !description || !location || !category || !amountNeeded) {
+      console.log('❌ Missing required fields')
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       )
     }
 
+    console.log('✅ All required fields present')
+
     if (!STELLAR_FUNDING_SECRET) {
+      console.log('❌ STELLAR_FUNDING_SECRET not configured')
       return NextResponse.json(
         { error: 'Funding account not configured' },
         { status: 500 }
       )
     }
 
-    // Create temporary identity files
+    console.log('✅ STELLAR_FUNDING_SECRET configured')
+
+    // Check if contracts directory exists
+    console.log('📁 Checking contracts directory:', CONTRACTS_DIR)
+    if (!existsSync(CONTRACTS_DIR)) {
+      console.error('❌ Contracts directory does not exist:', CONTRACTS_DIR)
+      throw new Error(`Contracts directory not found: ${CONTRACTS_DIR}`)
+    }
+    console.log('✅ Contracts directory exists')
+
+    // Generate unique timestamp for identity names
     const timestamp = Date.now()
-    userIdentityFile = join(CONTRACTS_DIR, `user_identity_${timestamp}.txt`)
-    fundingIdentityFile = join(CONTRACTS_DIR, `funding_identity_${timestamp}.txt`)
 
-    writeFileSync(userIdentityFile, userPrivateKey)
-    writeFileSync(fundingIdentityFile, STELLAR_FUNDING_SECRET)
-
-    // Import identities
-    execSync(`stellar keys add user_${timestamp} --secret-key`, {
-      input: userPrivateKey,
-      cwd: CONTRACTS_DIR,
-      stdio: ['pipe', 'pipe', 'pipe']
-    })
-
-    execSync(`stellar keys add funding_${timestamp} --secret-key`, {
-      input: STELLAR_FUNDING_SECRET,
-      cwd: CONTRACTS_DIR,
-      stdio: ['pipe', 'pipe', 'pipe']
-    })
-
-    // Get user's public key
-    const userPublicKeyResult = execSync(
-      `stellar keys address user_${timestamp}`,
-      {
-        cwd: CONTRACTS_DIR,
-        encoding: 'utf8',
-        stdio: ['pipe', 'pipe', 'pipe']
-      }
-    )
-    const userAddress = userPublicKeyResult.trim()
+    // Use Stellar SDK to get keypairs directly - no need for CLI identity management
+    console.log('🔑 Processing user and funding keys...')
+    const { Keypair } = await import('@stellar/stellar-sdk')
+    const userKeypair = Keypair.fromSecret(userPrivateKey)
+    const fundingKeypair = Keypair.fromSecret(STELLAR_FUNDING_SECRET!)
+    
+    // Get user's public key directly from the keypair
+    console.log('🔍 Getting user public key...')
+    const userAddress = userKeypair.publicKey()
+    console.log('✅ User address retrieved:', userAddress.substring(0, 10) + '...')
+    console.log('✅ Keys processed successfully')
 
     // Convert image URLs array to Stellar format
+    console.log('🖼️ Processing image URLs...')
     const imageUrlsArg = imageUrls.length > 0 
-      ? `'[${imageUrls.map((url: string) => `"${url}"`).join(',')}]'`
-      : "'[]'"
+      ? `[${imageUrls.map((url: string) => `"${url}"`).join(',')}]`
+      : "[]"
+    console.log('✅ Image URLs processed:', imageUrls.length, 'images')
+    console.log('🔍 Image URLs argument:', imageUrlsArg)
 
-    // Call create_report function (app-sponsored)
-    const createReportCommand = `stellar contract invoke \\
-      --id ${NEED_REPORTS_CONTRACT_ID} \\
-      --source funding_${timestamp} \\
-      --network testnet \\
-      -- create_report \\
-      --creator ${userAddress} \\
-      --title "${title}" \\
-      --description "${description}" \\
-      --location "${location}" \\
-      --category "${category}" \\
-      --amount_needed ${amountNeeded} \\
-      --image_urls ${imageUrlsArg}`
-
+    // Call create_report function - this requires user authorization due to creator.require_auth()
+    // We need to build a transaction that both accounts can sign
     console.log('🚀 Creating need report...')
-    const createResult = execSync(createReportCommand, {
-      cwd: CONTRACTS_DIR,
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'pipe']
-    })
-
-    console.log('✅ Report created successfully:', createResult.trim())
-
-    // Parse the result to get report ID
-    let reportId: number
+    console.log('⏳ This may take a few seconds...')
+    console.log('📝 Note: Contract requires user authorization, building multi-sig transaction...')
+    
+    // First simulate the transaction to get the auth requirements
+    console.log('🔍 Simulating transaction to understand auth requirements...')
+    
     try {
-      reportId = parseInt(createResult.trim())
-    } catch (error) {
-      console.error('Failed to parse report ID:', createResult)
-      reportId = 0
+      const simResult = await runStellarCommand([
+        'contract', 'invoke',
+        '--id', NEED_REPORTS_CONTRACT_ID,
+        '--source', STELLAR_FUNDING_SECRET!,
+        '--network', 'testnet',
+        '--sim-only',
+        '--',
+        'create_report',
+        '--creator', userAddress,
+        '--title', title,
+        '--description', description,
+        '--location', location,
+        '--category', category,
+        '--amount_needed', amountNeeded.toString(),
+        '--image_urls', imageUrlsArg
+      ])
+      console.log('✅ Simulation result:', simResult)
+    } catch (simError) {
+      console.log('⚠️ Simulation failed (expected for auth):', simError.message)
     }
-
-    // Cleanup identities
+    
+    // App-sponsored transaction approach: Funding account pays fees, user provides authorization
+    console.log('💡 Attempting app-sponsored transaction (funding account pays fees)')
+    console.log('📝 Note: Contract requires user authorization due to creator.require_auth()')
+    
+    // Try app-sponsored approach first using temporary identity files
+    const userIdentityName = `user_${timestamp}`
+    const fundingIdentityName = `funding_${timestamp}`
+    
     try {
-      execSync(`stellar keys remove user_${timestamp}`, {
-        cwd: CONTRACTS_DIR,
-        stdio: ['pipe', 'pipe', 'pipe']
-      })
-      execSync(`stellar keys remove funding_${timestamp}`, {
-        cwd: CONTRACTS_DIR,
-        stdio: ['pipe', 'pipe', 'pipe']
-      })
-    } catch (cleanupError) {
-      console.warn('Cleanup warning:', cleanupError)
+      console.log('🔑 Creating temporary identity files for app-sponsored transaction...')
+      
+      const identityDir = join(CONTRACTS_DIR, '.stellar', 'identity')
+      const { mkdir } = await import('fs/promises')
+      await mkdir(identityDir, { recursive: true })
+      
+      // Create user identity file
+      const userIdentityFile = join(identityDir, `${userIdentityName}.toml`)
+      const userIdentityConfig = `secret_key = "${userPrivateKey}"\n`
+      writeFileSync(userIdentityFile, userIdentityConfig, 'utf8')
+      
+      // Create funding identity file  
+      const fundingIdentityFile = join(identityDir, `${fundingIdentityName}.toml`)
+      const fundingIdentityConfig = `secret_key = "${STELLAR_FUNDING_SECRET}"\n`
+      writeFileSync(fundingIdentityFile, fundingIdentityConfig, 'utf8')
+      
+      console.log('✅ Temporary identity files created')
+      
+      // Attempt app-sponsored transaction with funding account paying fees
+      console.log('🏦 Attempting transaction with funding account as source...')
+      try {
+        const createResult = await runStellarCommand([
+          'contract', 'invoke',
+          '--id', NEED_REPORTS_CONTRACT_ID,
+          '--source', fundingIdentityName, // Funding account pays fees
+          '--network', 'testnet',
+          '--',
+          'create_report',
+          '--creator', userAddress,
+          '--title', title,
+          '--description', description,
+          '--location', location,
+          '--category', category,
+          '--amount_needed', amountNeeded.toString(),
+          '--image_urls', imageUrlsArg
+        ])
+        
+        console.log('✅ App-sponsored transaction successful:', createResult.trim())
+        
+        // Parse the result to get report ID
+        let reportId: number
+        try {
+          reportId = parseInt(createResult.trim())
+        } catch (error) {
+          console.error('Failed to parse report ID:', createResult)
+          reportId = 0
+        }
+        
+        // Cleanup temporary identity files
+        try {
+          unlinkSync(userIdentityFile)
+          unlinkSync(fundingIdentityFile)
+          console.log('🧹 Temporary identity files cleaned up')
+        } catch (cleanupError) {
+          console.warn('⚠️ Failed to cleanup temporary identity files:', cleanupError)
+        }
+        
+        return NextResponse.json({
+          success: true,
+          reportId,
+          message: 'Need report created successfully on blockchain (app-sponsored fees)',
+          contractId: NEED_REPORTS_CONTRACT_ID,
+          userAddress,
+          imageUrls
+        })
+        
+      } catch (sponsoredError: any) {
+        console.log('⚠️ App-sponsored transaction failed, falling back to user-paid...')
+        console.log('📝 Reason:', sponsoredError.message)
+        
+        // Cleanup temporary files
+        try {
+          unlinkSync(userIdentityFile)
+          unlinkSync(fundingIdentityFile)
+        } catch (cleanupError) {
+          console.warn('⚠️ Failed to cleanup temporary identity files:', cleanupError)
+        }
+        
+        // Fall back to user-paid approach
+        console.log('🔄 Fallback: User pays transaction fees (user has sufficient balance)')
+        const createResult = await runStellarCommand([
+          'contract', 'invoke',
+          '--id', NEED_REPORTS_CONTRACT_ID,
+          '--source', userPrivateKey, // User pays fees as fallback
+          '--network', 'testnet',
+          '--',
+          'create_report',
+          '--creator', userAddress,
+          '--title', title,
+          '--description', description,
+          '--location', location,
+          '--category', category,
+          '--amount_needed', amountNeeded.toString(),
+          '--image_urls', imageUrlsArg
+        ])
+        
+        console.log('✅ Report created via user-paid fallback:', createResult.trim())
+        
+        // Parse the result to get report ID
+        let reportId: number
+        try {
+          reportId = parseInt(createResult.trim())
+        } catch (error) {
+          console.error('Failed to parse report ID:', createResult)
+          reportId = 0
+        }
+        
+        return NextResponse.json({
+          success: true,
+          reportId,
+          message: 'Need report created successfully on blockchain (user-paid fees)',
+          contractId: NEED_REPORTS_CONTRACT_ID,
+          userAddress,
+          imageUrls
+        })
+      }
+      
+    } catch (identityError: any) {
+      console.error('❌ Identity file creation failed:', identityError)
+      throw identityError
     }
-
-    return NextResponse.json({
-      success: true,
-      reportId,
-      message: 'Need report created successfully on blockchain',
-      contractId: NEED_REPORTS_CONTRACT_ID,
-      userAddress,
-      imageUrls
-    })
 
   } catch (error: any) {
     console.error('❌ Error creating need report:', error)
@@ -137,18 +299,5 @@ export async function POST(request: NextRequest) {
       error: error.message || 'Failed to create need report',
       details: error.toString()
     }, { status: 500 })
-
-  } finally {
-    // Cleanup temporary files
-    try {
-      if (userIdentityFile && existsSync(userIdentityFile)) {
-        unlinkSync(userIdentityFile)
-      }
-      if (fundingIdentityFile && existsSync(fundingIdentityFile)) {
-        unlinkSync(fundingIdentityFile)
-      }
-    } catch (cleanupError) {
-      console.warn('File cleanup warning:', cleanupError)
-    }
   }
 }
