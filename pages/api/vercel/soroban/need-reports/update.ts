@@ -10,7 +10,7 @@ import {
   scValToNative
 } from '@stellar/stellar-sdk'
 
-const NEED_REPORTS_CONTRACT_ID = process.env.NEED_REPORTS_CONTRACT_ID || 'CD4RXDCGFTQGUO4Q3N2IU4RQXYGOL3236JK6KPBGCGSDSQ5ORY7A3KVF'
+const NEED_REPORTS_CONTRACT_ID = process.env.NEED_REPORTS_CONTRACT_ID || 'CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW'
 const STELLAR_FUNDING_SECRET = process.env.STELLAR_FUNDING_SECRET
 
 // Initialize Soroban RPC server
@@ -84,7 +84,7 @@ async function callContract(contractId: string, method: string, args: any[] = []
             if (txResult.returnValue) {
               return scValToNative(txResult.returnValue)
             }
-            return null
+            return { hash, success: true }
           } else if (txResult.status === 'FAILED') {
             throw new Error(`Transaction failed: ${txResult.resultXdr}`)
           }
@@ -101,7 +101,7 @@ async function callContract(contractId: string, method: string, args: any[] = []
       return scValToNative(result.returnValue)
     }
     
-    return result.hash || null
+    return { hash: result.hash || null, success: true }
     
   } catch (error: any) {
     console.error('❌ Contract call failed:', error)
@@ -110,12 +110,12 @@ async function callContract(contractId: string, method: string, args: any[] = []
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
+  if (req.method !== 'PUT') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
   try {
-    console.log('🚀 Need report API called')
+    console.log('🔄 Need update API called')
     
     console.log('📝 Request body parsed:', {
       ...req.body,
@@ -124,17 +124,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     const {
       userPrivateKey,
+      reportId,
       title,
       description,
       location,
       category,
       amountNeeded,
-      imageUrls = []
+      imageUrls = [],
+      reason
     } = req.body
 
-    if (!userPrivateKey || !title || !description || !location || !category || !amountNeeded) {
+    if (!userPrivateKey || !reportId || !reason) {
       console.log('❌ Missing required fields')
-      return res.status(400).json({ error: 'Missing required fields' })
+      return res.status(400).json({ 
+        error: 'Missing required fields: userPrivateKey, reportId, and reason are required' 
+      })
     }
 
     console.log('✅ All required fields present')
@@ -147,34 +151,49 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('✅ STELLAR_FUNDING_SECRET configured')
 
     // Use Stellar SDK to get keypairs directly
-    console.log('🔑 Processing user and funding keys...')
+    console.log('🔑 Processing user key...')
     const userKeypair = Keypair.fromSecret(userPrivateKey)
     
     // Get user's public key directly from the keypair
     console.log('🔍 Getting user public key...')
     const userAddress = userKeypair.publicKey()
     console.log('✅ User address retrieved:', userAddress.substring(0, 10) + '...')
-    console.log('✅ Keys processed successfully')
 
     // Convert image URLs array to Soroban vector format
     console.log('🖼️ Processing image URLs...')
     const imageUrlsVector = imageUrls.map((url: string) => nativeToScVal(url, { type: 'string' }))
     console.log('✅ Image URLs processed:', imageUrls.length, 'images')
 
-    // Call create_report function using Stellar SDK
-    console.log('🚀 Creating need report using Stellar SDK...')
+    // Call update_report function using Stellar SDK
+    console.log('🔄 Updating need report using Stellar SDK...')
     console.log('⏳ This may take a few seconds...')
     
-    // Prepare contract parameters
+    // Prepare contract parameters - only include defined fields
     const contractArgs = [
-      nativeToScVal(Address.fromString(userAddress), { type: 'address' }), // creator
-      nativeToScVal(title, { type: 'string' }), // title
-      nativeToScVal(description, { type: 'string' }), // description
-      nativeToScVal(location, { type: 'string' }), // location
-      nativeToScVal(category, { type: 'string' }), // category
-      nativeToScVal(amountNeeded, { type: 'u64' }), // amount_needed
-      nativeToScVal(imageUrlsVector, { type: 'vector' }) // image_urls
+      nativeToScVal(parseInt(reportId), { type: 'u32' }), // report_id
+      nativeToScVal(Address.fromString(userAddress), { type: 'address' }), // updater
+      nativeToScVal(reason, { type: 'string' }) // reason
     ]
+
+    // Add optional fields only if they are provided
+    if (title !== undefined) {
+      contractArgs.push(nativeToScVal(title, { type: 'string' }))
+    }
+    if (description !== undefined) {
+      contractArgs.push(nativeToScVal(description, { type: 'string' }))
+    }
+    if (location !== undefined) {
+      contractArgs.push(nativeToScVal(location, { type: 'string' }))
+    }
+    if (category !== undefined) {
+      contractArgs.push(nativeToScVal(category, { type: 'string' }))
+    }
+    if (amountNeeded !== undefined) {
+      contractArgs.push(nativeToScVal(amountNeeded, { type: 'u64' }))
+    }
+    if (imageUrls.length > 0) {
+      contractArgs.push(nativeToScVal(imageUrlsVector, { type: 'vector' }))
+    }
     
     // Try funding account first (app-sponsored), then fallback to user
     let result
@@ -184,7 +203,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log('💡 Attempting app-sponsored transaction (funding account pays fees)...')
       result = await callContract(
         NEED_REPORTS_CONTRACT_ID,
-        'create_report',
+        'update_report',
         contractArgs,
         STELLAR_FUNDING_SECRET!
       )
@@ -199,7 +218,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         console.log('🔄 Fallback: User pays transaction fees...')
         result = await callContract(
           NEED_REPORTS_CONTRACT_ID,
-          'create_report',
+          'update_report',
           contractArgs,
           userPrivateKey
         )
@@ -208,39 +227,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         
       } catch (userError: any) {
         console.error('❌ Both app-sponsored and user-paid transactions failed')
-        throw new Error(`Failed to create report: ${userError.message}`)
+        throw new Error(`Failed to update report: ${userError.message}`)
       }
     }
     
     // Parse the result
-    let reportId = 0
-    if (typeof result === 'number') {
-      reportId = result
-    } else if (typeof result === 'string') {
-      // If result is a transaction hash
-      transactionHash = result
-      reportId = 1 // Default to 1 if we can't parse the actual ID
+    let success = false
+    if (typeof result === 'boolean') {
+      success = result
+    } else if (result && typeof result === 'object') {
+      success = result.success === true
+      transactionHash = result.hash
     }
     
-    console.log('📋 Report created with ID:', reportId)
+    console.log('📋 Update result:', success)
     console.log('🔗 Transaction hash:', transactionHash || 'Not available')
     
-    return res.status(200).json({
-      success: true,
-      reportId,
-      message: 'Need report created successfully on blockchain',
-      contractId: NEED_REPORTS_CONTRACT_ID,
-      userAddress,
-      imageUrls,
-      transactionHash
-    })
+    if (success) {
+      return res.status(200).json({
+        success: true,
+        reportId,
+        message: 'Need report updated successfully on blockchain',
+        contractId: NEED_REPORTS_CONTRACT_ID,
+        userAddress,
+        transactionHash
+      })
+    } else {
+      return res.status(400).json({
+        success: false,
+        error: 'Update operation returned false - check if you have permission to update this report'
+      })
+    }
 
   } catch (error: any) {
-    console.error('❌ Error creating need report:', error)
+    console.error('❌ Error updating need report:', error)
     
     return res.status(500).json({
       success: false,
-      error: error.message || 'Failed to create need report',
+      error: error.message || 'Failed to update need report',
       details: error.toString()
     })
   }

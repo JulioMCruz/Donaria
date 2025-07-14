@@ -10,9 +10,6 @@ import {
   scValToNative
 } from '@stellar/stellar-sdk'
 
-const NEED_REPORTS_CONTRACT_ID = process.env.NEED_REPORTS_CONTRACT_ID || 'CD4RXDCGFTQGUO4Q3N2IU4RQXYGOL3236JK6KPBGCGSDSQ5ORY7A3KVF'
-const STELLAR_FUNDING_SECRET = process.env.STELLAR_FUNDING_SECRET
-
 // Initialize Soroban RPC server
 const server = new SorobanRpc.Server('https://soroban-testnet.stellar.org')
 
@@ -73,8 +70,8 @@ async function callContract(contractId: string, method: string, args: any[] = []
       console.log('⏳ Waiting for transaction confirmation...', hash)
       
       let attempts = 0
-      while (attempts < 30) { // Increased attempts for complex contracts
-        await new Promise(resolve => setTimeout(resolve, 2000)) // Wait 2 seconds
+      while (attempts < 30) {
+        await new Promise(resolve => setTimeout(resolve, 2000))
         
         try {
           const txResult = await server.getTransaction(hash)
@@ -84,7 +81,7 @@ async function callContract(contractId: string, method: string, args: any[] = []
             if (txResult.returnValue) {
               return scValToNative(txResult.returnValue)
             }
-            return null
+            return { hash, success: true }
           } else if (txResult.status === 'FAILED') {
             throw new Error(`Transaction failed: ${txResult.resultXdr}`)
           }
@@ -101,7 +98,7 @@ async function callContract(contractId: string, method: string, args: any[] = []
       return scValToNative(result.returnValue)
     }
     
-    return result.hash || null
+    return { hash: result.hash || null, success: true }
     
   } catch (error: any) {
     console.error('❌ Contract call failed:', error)
@@ -115,78 +112,46 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    console.log('🚀 Need report API called')
+    console.log('🔐 Soroban API: Storing message with app-sponsored gas')
     
-    console.log('📝 Request body parsed:', {
-      ...req.body,
-      userPrivateKey: '[REDACTED]'
+    const { contractId, userAddress, message, network, privateKey } = req.body
+    
+    if (!contractId || !userAddress || !message || !network || !privateKey) {
+      return res.status(400).json({ error: 'Missing required parameters' })
+    }
+
+    console.log('🔐 Storing message with app-sponsored gas:', {
+      contractId,
+      userAddress,
+      message,
+      network
     })
-    
-    const {
-      userPrivateKey,
-      title,
-      description,
-      location,
-      category,
-      amountNeeded,
-      imageUrls = []
-    } = req.body
 
-    if (!userPrivateKey || !title || !description || !location || !category || !amountNeeded) {
-      console.log('❌ Missing required fields')
-      return res.status(400).json({ error: 'Missing required fields' })
+    // Get funding account private key from environment
+    const fundingPrivateKey = process.env.STELLAR_FUNDING_SECRET
+    if (!fundingPrivateKey) {
+      throw new Error('STELLAR_FUNDING_SECRET not configured')
     }
 
-    console.log('✅ All required fields present')
-
-    if (!STELLAR_FUNDING_SECRET) {
-      console.log('❌ STELLAR_FUNDING_SECRET not configured')
-      return res.status(500).json({ error: 'Funding account not configured' })
-    }
-
-    console.log('✅ STELLAR_FUNDING_SECRET configured')
-
-    // Use Stellar SDK to get keypairs directly
-    console.log('🔑 Processing user and funding keys...')
-    const userKeypair = Keypair.fromSecret(userPrivateKey)
+    console.log('🔑 Processing keys and calling contract...')
     
-    // Get user's public key directly from the keypair
-    console.log('🔍 Getting user public key...')
-    const userAddress = userKeypair.publicKey()
-    console.log('✅ User address retrieved:', userAddress.substring(0, 10) + '...')
-    console.log('✅ Keys processed successfully')
-
-    // Convert image URLs array to Soroban vector format
-    console.log('🖼️ Processing image URLs...')
-    const imageUrlsVector = imageUrls.map((url: string) => nativeToScVal(url, { type: 'string' }))
-    console.log('✅ Image URLs processed:', imageUrls.length, 'images')
-
-    // Call create_report function using Stellar SDK
-    console.log('🚀 Creating need report using Stellar SDK...')
-    console.log('⏳ This may take a few seconds...')
-    
-    // Prepare contract parameters
+    // Prepare contract arguments
     const contractArgs = [
-      nativeToScVal(Address.fromString(userAddress), { type: 'address' }), // creator
-      nativeToScVal(title, { type: 'string' }), // title
-      nativeToScVal(description, { type: 'string' }), // description
-      nativeToScVal(location, { type: 'string' }), // location
-      nativeToScVal(category, { type: 'string' }), // category
-      nativeToScVal(amountNeeded, { type: 'u64' }), // amount_needed
-      nativeToScVal(imageUrlsVector, { type: 'vector' }) // image_urls
+      nativeToScVal(Address.fromString(userAddress), { type: 'address' }), // user
+      nativeToScVal(message, { type: 'string' }) // message
     ]
     
-    // Try funding account first (app-sponsored), then fallback to user
+    // Try funding account first (app-sponsored)
     let result
-    let transactionHash
+    let messageCount = 0
     
     try {
-      console.log('💡 Attempting app-sponsored transaction (funding account pays fees)...')
+      console.log('💡 Using app-sponsored transaction (funding account pays fees)...')
       result = await callContract(
-        NEED_REPORTS_CONTRACT_ID,
-        'create_report',
+        contractId,
+        'store_sponsored_message',
         contractArgs,
-        STELLAR_FUNDING_SECRET!
+        fundingPrivateKey
       )
       
       console.log('✅ App-sponsored transaction successful')
@@ -198,50 +163,53 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       try {
         console.log('🔄 Fallback: User pays transaction fees...')
         result = await callContract(
-          NEED_REPORTS_CONTRACT_ID,
-          'create_report',
+          contractId,
+          'store_message', // Use regular store_message instead of sponsored
           contractArgs,
-          userPrivateKey
+          privateKey
         )
         
         console.log('✅ User-paid transaction successful')
         
       } catch (userError: any) {
         console.error('❌ Both app-sponsored and user-paid transactions failed')
-        throw new Error(`Failed to create report: ${userError.message}`)
+        throw new Error(`Failed to store message: ${userError.message}`)
       }
     }
     
-    // Parse the result
-    let reportId = 0
-    if (typeof result === 'number') {
-      reportId = result
-    } else if (typeof result === 'string') {
-      // If result is a transaction hash
-      transactionHash = result
-      reportId = 1 // Default to 1 if we can't parse the actual ID
+    // Parse the response - it should be a number (message count)
+    try {
+      if (typeof result === 'number') {
+        messageCount = result
+      } else if (result && typeof result === 'object' && result.messageCount) {
+        messageCount = result.messageCount
+      } else if (typeof result === 'string') {
+        const matches = result.match(/\d+/)
+        if (matches) {
+          messageCount = parseInt(matches[0], 10) || 0
+        }
+      }
+    } catch (parseError) {
+      console.error('❌ Failed to parse contract response:', parseError)
+      console.log('Raw response:', result)
     }
     
-    console.log('📋 Report created with ID:', reportId)
-    console.log('🔗 Transaction hash:', transactionHash || 'Not available')
+    console.log('✅ Message stored successfully, count:', messageCount)
     
     return res.status(200).json({
       success: true,
-      reportId,
-      message: 'Need report created successfully on blockchain',
-      contractId: NEED_REPORTS_CONTRACT_ID,
-      userAddress,
-      imageUrls,
-      transactionHash
+      messageCount: messageCount,
+      userAddress: userAddress,
+      message: message,
+      contractId: contractId
     })
 
   } catch (error: any) {
-    console.error('❌ Error creating need report:', error)
+    console.error('❌ Error storing message with user key:', error)
     
     return res.status(500).json({
       success: false,
-      error: error.message || 'Failed to create need report',
-      details: error.toString()
+      error: error.message || 'Unknown error'
     })
   }
 }

@@ -29,6 +29,46 @@ Our platform serves diverse crisis scenarios:
 - **Refugee Assistance**: Immediate shelter, clothing, and basic necessities
 - **Community Rebuilding**: Infrastructure repair and economic recovery
 
+## 🚀 Revolutionary Wallet Architecture
+
+Unlike traditional blockchain applications that require users to install wallet extensions and manage crypto tokens, Donaria features a completely different wallet architecture designed for mainstream adoption:
+
+### Why Our Platform is More User-Friendly
+
+**1. Superior User Experience**
+- **No wallet installation required** - Users don't need to install browser wallet extensions like Freighter or Albedo
+- **No gas fee management** - Users never need to buy or manage FLR/SGB tokens for transaction fees
+- **Familiar social login flow** - Seamless onboarding through social providers users already know and trust
+
+**2. Developer Control & Reliability**
+- **Controlled transaction flow** - We manage the entire transaction experience and user feedback
+- **Custom business logic** - Can implement sophisticated logic around transactions and user interactions
+- **Better error handling** - Comprehensive error management with user-friendly messaging
+
+**3. Mainstream Adoption Focus**
+- **Works for crypto newcomers** - Perfect for users who know nothing about blockchain or cryptocurrency
+- **Removes crypto barriers** - Social login eliminates the complexity of private key management
+- **Gasless interactions** - Users can donate and create reports without any blockchain knowledge
+
+### Technical Implementation
+
+**App-Managed Wallets**
+- Platform creates and securely manages Stellar keypairs for users
+- Private keys encrypted and stored server-side with enterprise-grade security
+- Users interact through our intuitive UI, not complex wallet interfaces
+
+**Gasless Transactions (App-Sponsored)**
+- Our funding account automatically pays all transaction fees
+- Users experience instant, free interactions with the blockchain
+- Fallback to user-paid transactions available for advanced users who prefer it
+
+**Social Login Integration**
+- Seamless onboarding through familiar social providers
+- Lower barrier to entry compared to traditional crypto wallets
+- Maintains security while dramatically improving accessibility
+
+This architecture makes Donaria accessible to everyone, not just crypto enthusiasts, while maintaining all the benefits of blockchain transparency and security.
+
 ### 🌟 Key Features
 
 #### 🔐 Trust & Transparency
@@ -131,10 +171,10 @@ flowchart TB
     end
     
     subgraph API [API Layer]
-        CREATE_API[/api/soroban/create]
-        GET_API[/api/soroban/get]
-        FUNDING_API[/api/funding]
-        USERS_API[/api/users]
+        CREATE_API['/api/soroban/create']
+        GET_API['/api/soroban/get']
+        FUNDING_API['/api/funding']
+        USERS_API['/api/users']
     end
     
     %% Social Authentication Flow
