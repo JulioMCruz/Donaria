@@ -497,14 +497,23 @@ export default function CreateNeedPage() {
                     </span>
                   </div>
 
-                  {transactionResult.transactionHash && (
-                    <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                      <span className="text-sm font-medium block mb-2">Transaction Hash:</span>
-                      <span className="text-xs font-mono text-orange-700 dark:text-orange-400 break-all">
-                        {transactionResult.transactionHash}
-                      </span>
-                    </div>
-                  )}
+                  <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                    <span className="text-sm font-medium block mb-2">Transaction:</span>
+                    {transactionResult.transactionHash ? (
+                      <div className="space-y-2">
+                        <span className="text-xs font-mono text-orange-700 dark:text-orange-400 break-all">
+                          {transactionResult.transactionHash}
+                        </span>
+                        <div className="text-xs text-orange-600 dark:text-orange-300">
+                          ✅ Verified on Stellar Testnet
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-xs text-orange-600 dark:text-orange-300">
+                        Transaction completed successfully (hash not available)
+                      </div>
+                    )}
+                  </div>
                 </div>
               </>
             )}
@@ -522,7 +531,7 @@ export default function CreateNeedPage() {
               Go to Dashboard
             </Button>
             
-            {transactionResult?.transactionHash && (
+            {transactionResult?.transactionHash ? (
               <Button 
                 variant="outline" 
                 onClick={() => {
@@ -534,7 +543,22 @@ export default function CreateNeedPage() {
                 className="w-full"
               >
                 <ExternalLink className="mr-2 h-4 w-4" />
-                View on Stellar Explorer
+                View Transaction on Stellar Explorer
+              </Button>
+            ) : (
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  window.open(
+                    'https://stellar.expert/explorer/testnet', 
+                    '_blank'
+                  )
+                }}
+                className="w-full"
+                disabled
+              >
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Transaction Hash Not Available
               </Button>
             )}
             

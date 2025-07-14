@@ -208,10 +208,42 @@ export async function POST(request: NextRequest) {
         
         console.log('✅ App-sponsored transaction successful:', createResult.trim())
         
-        // Parse the result to get report ID
+        // Parse the result to get report ID and transaction hash
         let reportId: number
+        let transactionHash: string | undefined
+        
         try {
-          reportId = parseInt(createResult.trim())
+          // The result might be just the report ID, or it might include transaction info
+          const lines = createResult.trim().split('\n')
+          const lastLine = lines[lines.length - 1]
+          
+          // Try to parse the last line as report ID (number)
+          reportId = parseInt(lastLine)
+          
+          // Look for transaction hash in the output
+          for (const line of lines) {
+            if (line.includes('transaction:') || line.includes('tx:') || line.includes('hash:') || line.includes('Transaction hash:')) {
+              const hashMatch = line.match(/[0-9a-f]{64}/i)
+              if (hashMatch) {
+                transactionHash = hashMatch[0]
+                break
+              }
+            }
+          }
+          
+          // If no hash found in specific lines, scan all lines for any 64-char hex string
+          if (!transactionHash) {
+            for (const line of lines) {
+              const hashMatch = line.match(/[0-9a-f]{64}/i)
+              if (hashMatch) {
+                transactionHash = hashMatch[0]
+                break
+              }
+            }
+          }
+          
+          console.log('📋 Parsed report ID:', reportId)
+          console.log('🔗 Found transaction hash:', transactionHash || 'Not found')
         } catch (error) {
           console.error('Failed to parse report ID:', createResult)
           reportId = 0
@@ -232,7 +264,8 @@ export async function POST(request: NextRequest) {
           message: 'Need report created successfully on blockchain (app-sponsored fees)',
           contractId: NEED_REPORTS_CONTRACT_ID,
           userAddress,
-          imageUrls
+          imageUrls,
+          transactionHash
         })
         
       } catch (sponsoredError: any) {
@@ -267,10 +300,42 @@ export async function POST(request: NextRequest) {
         
         console.log('✅ Report created via user-paid fallback:', createResult.trim())
         
-        // Parse the result to get report ID
+        // Parse the result to get report ID and transaction hash
         let reportId: number
+        let transactionHash: string | undefined
+        
         try {
-          reportId = parseInt(createResult.trim())
+          // The result might be just the report ID, or it might include transaction info
+          const lines = createResult.trim().split('\n')
+          const lastLine = lines[lines.length - 1]
+          
+          // Try to parse the last line as report ID (number)
+          reportId = parseInt(lastLine)
+          
+          // Look for transaction hash in the output
+          for (const line of lines) {
+            if (line.includes('transaction:') || line.includes('tx:') || line.includes('hash:') || line.includes('Transaction hash:')) {
+              const hashMatch = line.match(/[0-9a-f]{64}/i)
+              if (hashMatch) {
+                transactionHash = hashMatch[0]
+                break
+              }
+            }
+          }
+          
+          // If no hash found in specific lines, scan all lines for any 64-char hex string
+          if (!transactionHash) {
+            for (const line of lines) {
+              const hashMatch = line.match(/[0-9a-f]{64}/i)
+              if (hashMatch) {
+                transactionHash = hashMatch[0]
+                break
+              }
+            }
+          }
+          
+          console.log('📋 Parsed report ID:', reportId)
+          console.log('🔗 Found transaction hash:', transactionHash || 'Not found')
         } catch (error) {
           console.error('Failed to parse report ID:', createResult)
           reportId = 0
@@ -282,7 +347,8 @@ export async function POST(request: NextRequest) {
           message: 'Need report created successfully on blockchain (user-paid fees)',
           contractId: NEED_REPORTS_CONTRACT_ID,
           userAddress,
-          imageUrls
+          imageUrls,
+          transactionHash
         })
       }
       

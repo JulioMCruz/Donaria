@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { execSync } from 'child_process'
 
-const NEED_REPORTS_CONTRACT_ID = process.env.NEED_REPORTS_CONTRACT_ID || 'CD4RXDCGFTQGUO4Q3N2IU4RQXYGOL3236JK6KPBGCGSDSQ5ORY7A3KVF'
+const NEED_REPORTS_CONTRACT_ID = process.env.NEED_REPORTS_CONTRACT_ID || 'CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW'
+const STELLAR_FUNDING_SECRET = process.env.STELLAR_FUNDING_SECRET
 const CONTRACTS_DIR = '/Users/osx/Projects/Stellar/mvp02/Donaria/contracts-soroban/need-reports'
 
 export async function GET(request: NextRequest) {
@@ -13,13 +14,20 @@ export async function GET(request: NextRequest) {
     const offset = searchParams.get('offset') || '0'
     const limit = searchParams.get('limit') || '10'
 
+    if (!STELLAR_FUNDING_SECRET) {
+      return NextResponse.json(
+        { error: 'STELLAR_FUNDING_SECRET not configured' },
+        { status: 500 }
+      )
+    }
+
     let command: string
 
     if (reportId) {
       // Get specific report
       command = `stellar contract invoke \\
         --id ${NEED_REPORTS_CONTRACT_ID} \\
-        --source alice \\
+        --source ${STELLAR_FUNDING_SECRET} \\
         --network testnet \\
         -- get_report \\
         --report_id ${reportId}`
@@ -27,7 +35,7 @@ export async function GET(request: NextRequest) {
       // Get reports by user
       command = `stellar contract invoke \\
         --id ${NEED_REPORTS_CONTRACT_ID} \\
-        --source alice \\
+        --source ${STELLAR_FUNDING_SECRET} \\
         --network testnet \\
         -- get_user_reports \\
         --user ${userAddress}`
@@ -35,7 +43,7 @@ export async function GET(request: NextRequest) {
       // Get reports by status
       command = `stellar contract invoke \\
         --id ${NEED_REPORTS_CONTRACT_ID} \\
-        --source alice \\
+        --source ${STELLAR_FUNDING_SECRET} \\
         --network testnet \\
         -- get_reports_by_status \\
         --status "${status}"`
@@ -43,7 +51,7 @@ export async function GET(request: NextRequest) {
       // Get all reports with pagination
       command = `stellar contract invoke \\
         --id ${NEED_REPORTS_CONTRACT_ID} \\
-        --source alice \\
+        --source ${STELLAR_FUNDING_SECRET} \\
         --network testnet \\
         -- get_all_reports \\
         --offset ${offset} \\
@@ -62,10 +70,49 @@ export async function GET(request: NextRequest) {
     // Parse the result
     let reports
     try {
-      reports = JSON.parse(result.trim())
+      const parsedResult = JSON.parse(result.trim())
+      
+      // Transform the data to match frontend interface
+      if (reportId) {
+        // Single report case
+        reports = parsedResult ? {
+          id: parsedResult.id?.toString() || '0',
+          title: parsedResult.title || 'Untitled Report',
+          description: parsedResult.description || '',
+          location: parsedResult.location || '',
+          category: parsedResult.category || '',
+          amountNeeded: parseInt(parsedResult.amount_needed) || 0,
+          amountRaised: parseInt(parsedResult.amount_raised) || 0,
+          status: mapContractStatus(parsedResult.status || 'pending'),
+          imageUrl: parsedResult.image_urls && parsedResult.image_urls.length > 0 ? parsedResult.image_urls[0] : '/placeholder.svg',
+          imageUrls: parsedResult.image_urls || [],
+          creator: parsedResult.creator || '',
+          createdAt: parsedResult.created_at || Date.now(),
+          updatedAt: parsedResult.updated_at || Date.now(),
+          verificationNotes: parsedResult.verification_notes || ''
+        } : null
+      } else {
+        // Multiple reports case
+        reports = Array.isArray(parsedResult) ? parsedResult.map((report: any) => ({
+          id: report.id?.toString() || '0',
+          title: report.title || 'Untitled Report',
+          description: report.description || '',
+          location: report.location || '',
+          category: report.category || '',
+          amountNeeded: parseInt(report.amount_needed) || 0,
+          amountRaised: parseInt(report.amount_raised) || 0,
+          status: mapContractStatus(report.status || 'pending'),
+          imageUrl: report.image_urls && report.image_urls.length > 0 ? report.image_urls[0] : '/placeholder.svg',
+          imageUrls: report.image_urls || [],
+          creator: report.creator || '',
+          createdAt: report.created_at || Date.now(),
+          updatedAt: report.updated_at || Date.now(),
+          verificationNotes: report.verification_notes || ''
+        })) : []
+      }
     } catch (parseError) {
       console.error('Failed to parse reports:', result)
-      reports = []
+      reports = reportId ? null : []
     }
 
     return NextResponse.json({
@@ -89,5 +136,20 @@ export async function GET(request: NextRequest) {
       error: error.message || 'Failed to fetch need reports',
       details: error.toString()
     }, { status: 500 })
+  }
+}
+
+// Helper function to map contract status to frontend status
+function mapContractStatus(contractStatus: string): "Pending" | "Verified" | "Funded" {
+  switch (contractStatus.toLowerCase()) {
+    case 'pending':
+      return 'Pending'
+    case 'verified':
+      return 'Verified'
+    case 'funded':
+    case 'completed':
+      return 'Funded'
+    default:
+      return 'Pending'
   }
 }

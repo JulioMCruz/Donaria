@@ -1,7 +1,8 @@
 'use client'
 
-import React, { createContext, useContext, useState, useCallback } from 'react'
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { getAccountInfo, sendPayment } from '@/lib/stellar-client'
+import { useAuth } from './AuthContext'
 
 interface AccountInfo {
   balance: string
@@ -31,6 +32,7 @@ interface WalletContextType {
   disconnectWallet: () => void
   refreshAccount: () => Promise<void>
   sendTransaction: (destination: string, amount: string, memo?: string) => Promise<PaymentResult>
+  loadWalletFromFirebase: (firebaseUid: string) => Promise<void>
   loading: boolean
   error: string | null
   clearError: () => void
@@ -39,6 +41,7 @@ interface WalletContextType {
 const WalletContext = createContext<WalletContextType | undefined>(undefined)
 
 export function WalletProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth()
   const [wallet, setWallet] = useState<WalletState>({
     isConnected: false,
     publicKey: null,
@@ -52,6 +55,54 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const clearError = useCallback(() => {
     setError(null)
   }, [])
+
+  // Function to load wallet data from Firebase
+  const loadWalletFromFirebase = useCallback(async (firebaseUid: string) => {
+    try {
+      console.log('🔍 Loading wallet data from Firebase for user:', firebaseUid.substring(0, 10) + '...')
+      setError(null)
+      
+      const response = await fetch(`/api/users/wallet?firebaseUid=${firebaseUid}`)
+      const data = await response.json()
+      
+      if (response.ok && data.exists && data.publicKey) {
+        console.log('✅ Wallet data loaded:', data.publicKey.substring(0, 10) + '...')
+        setWallet(prev => ({
+          ...prev,
+          isConnected: true,
+          publicKey: data.publicKey,
+          // Note: privateKey is not loaded here for security - only when unlocked via PIN
+        }))
+      } else {
+        console.log('⚠️ No wallet found in Firebase for user')
+        setWallet(prev => ({
+          ...prev,
+          isConnected: false,
+          publicKey: null,
+          privateKey: null,
+        }))
+      }
+    } catch (error) {
+      console.error('❌ Error loading wallet from Firebase:', error)
+      setError('Failed to load wallet information')
+    }
+  }, [])
+
+  // Load wallet data when user authentication state changes
+  useEffect(() => {
+    if (user?.uid) {
+      console.log('🔄 User authenticated, loading wallet data...')
+      loadWalletFromFirebase(user.uid)
+    } else {
+      console.log('🚪 User logged out, clearing wallet data...')
+      setWallet({
+        isConnected: false,
+        publicKey: null,
+        privateKey: null,
+        accountInfo: null,
+      })
+    }
+  }, [user, loadWalletFromFirebase])
 
   const connectWallet = useCallback((privateKey: string, publicKey: string) => {
     setWallet({
@@ -140,6 +191,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       disconnectWallet,
       refreshAccount,
       sendTransaction,
+      loadWalletFromFirebase,
       loading,
       error,
       clearError,
