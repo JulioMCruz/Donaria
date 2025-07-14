@@ -95,7 +95,7 @@ export default function DonorNeedDetailPage({ params }: { params: { id: string }
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="comments">
-                  <TabsList className="grid w-full grid-cols-3">
+                  <TabsList className="grid w-full grid-cols-1 gap-1 sm:grid-cols-3">
                     <TabsTrigger value="comments">Comments ({needDetails.comments.length})</TabsTrigger>
                     <TabsTrigger value="donations">Donations ({needDetails.donations.length})</TabsTrigger>
                     <TabsTrigger value="history">History ({needDetails.changeHistory.length})</TabsTrigger>

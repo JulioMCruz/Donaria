@@ -12,7 +12,7 @@ export function ReputationVote({ onVote }: ReputationVoteProps) {
     <div className="text-center space-y-4 p-4 bg-teal-50 dark:bg-teal-900/20 rounded-lg">
       <h3 className="font-semibold">Thank you! Help verify this need.</h3>
       <p className="text-sm text-muted-foreground">Does this report seem legitimate and trustworthy to you?</p>
-      <div className="flex justify-center gap-4">
+      <div className="flex flex-col sm:flex-row gap-2">
         <Button variant="outline" onClick={() => onVote("up")}>
           <ThumbsUp className="mr-2 h-4 w-4" />
           Looks Trustworthy
