@@ -1,6 +1,8 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, HandHeart } from "lucide-react"
+import { ArrowLeft, HandHeart, Loader2 } from "lucide-react"
 import { ImageGallery } from "@/app/components/beneficiary/image-gallery"
 import { DonationList } from "@/app/components/beneficiary/donation-list"
 import { ChangeHistoryList } from "@/app/components/beneficiary/change-history-list"
@@ -9,59 +11,186 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CommentList } from "@/app/components/donor/comment-list"
 import { CommentForm } from "@/app/components/donor/comment-form"
+import { useState, useEffect, use } from "react"
+import { toast } from "sonner"
 
-// Mock data for a single need
-const needDetails = {
-  id: "2",
-  title: "Medical Supplies for Local Clinic",
-  description:
-    "Our local clinic was damaged in the recent earthquake and is running critically low on essential medical supplies, including bandages, antiseptics, and basic medication. Your support can help us restock and continue providing care to over 200 families in the area.",
-  place: "Riverside, Central Province",
-  amountNeeded: 2500,
-  amountRaised: 1200,
-  walletAddress: "GABCDE...WXYZ",
-  status: "Verified",
-  author: "Maria Rodriguez",
-  authorAvatarUrl: "/beneficiary-avatar.png",
-  reputationScore: 92,
-  images: [
-    "/medical-clinic-waiting-area.png",
-    "/placeholder-8ospr.png",
-    "/placeholder-8ospr.png",
-    "/placeholder-8ospr.png",
-  ],
-  donations: [
-    { id: "d1", amount: 50, wallet: "GXYZ...ABC", date: "2025-07-13" },
-    { id: "d2", amount: 25, wallet: "GDEF...TUV", date: "2025-07-12" },
-  ],
-  changeHistory: [
-    {
-      id: "c1",
-      date: "2025-07-10",
-      field: "Amount Needed",
-      oldValue: "$2,000",
-      newValue: "$2,500",
-    },
-  ],
-  comments: [
-    {
-      id: "comment1",
-      author: "John D.",
-      date: "2025-07-14",
-      text: "Happy to help! Stay strong, Riverside.",
-      avatarUrl: "/stylized-man-avatar.png",
-    },
-    {
-      id: "comment2",
-      author: "Anonymous Donor",
-      date: "2025-07-13",
-      text: "Sending support from afar.",
-      avatarUrl: null,
-    },
-  ],
+interface ApiNeed {
+  id: string
+  title: string
+  description: string
+  location: string
+  category: string
+  amountNeeded: number
+  amountRaised: number
+  status: "Pending" | "Verified" | "Funded"
+  imageUrl: string
+  imageUrls: string[]
+  creator: string
+  createdAt: number
+  updatedAt: number
+  verificationNotes: string
 }
 
-export default function DonorNeedDetailPage({ params }: { params: { id: string } }) {
+interface DonorNeedDetails {
+  id: string
+  title: string
+  description: string
+  place: string
+  amountNeeded: number
+  amountRaised: number
+  walletAddress: string
+  status: string
+  author: string
+  authorAvatarUrl: string | null
+  reputationScore: number
+  images: string[]
+  donations: Array<{ id: string; amount: number; wallet: string; date: string }>
+  changeHistory: Array<{ id: string; date: string; field: string; oldValue: string; newValue: string }>
+  comments: Array<{ id: string; author: string; date: string; text: string; avatarUrl: string | null }>
+}
+
+export default function DonorNeedDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params)
+  const [needDetails, setNeedDetails] = useState<DonorNeedDetails | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Function to transform API data to donor detail format
+  const transformApiNeedToDetails = (apiNeed: ApiNeed): DonorNeedDetails => {
+    return {
+      id: apiNeed.id,
+      title: apiNeed.title,
+      description: apiNeed.description,
+      place: apiNeed.location,
+      amountNeeded: apiNeed.amountNeeded,
+      amountRaised: apiNeed.amountRaised,
+      walletAddress: apiNeed.creator,
+      status: apiNeed.status,
+      author: apiNeed.creator.substring(0, 10) + '...', // Truncate public key for display
+      authorAvatarUrl: "/beneficiary-avatar.png", // Default avatar
+      reputationScore: 92, // Default reputation score
+      images: apiNeed.imageUrls && apiNeed.imageUrls.length > 0 ? apiNeed.imageUrls : [apiNeed.imageUrl],
+      // Mock data for donations, change history, and comments (these would need separate API endpoints)
+      donations: [
+        { id: "d1", amount: 50, wallet: "GXYZ...ABC", date: "2025-07-13" },
+        { id: "d2", amount: 25, wallet: "GDEF...TUV", date: "2025-07-12" },
+      ],
+      changeHistory: [
+        {
+          id: "c1",
+          date: new Date(apiNeed.updatedAt).toLocaleDateString(),
+          field: "Last Updated",
+          oldValue: "Previous version",
+          newValue: "Current version",
+        },
+      ],
+      comments: [
+        {
+          id: "comment1",
+          author: "John D.",
+          date: "2025-07-14",
+          text: "Happy to help! Stay strong.",
+          avatarUrl: "/stylized-man-avatar.png",
+        },
+        {
+          id: "comment2",
+          author: "Anonymous Donor",
+          date: "2025-07-13",
+          text: "Sending support from afar.",
+          avatarUrl: null,
+        },
+      ],
+    }
+  }
+
+  // Fetch need data on component mount
+  useEffect(() => {
+    const fetchNeed = async () => {
+      if (!resolvedParams.id) return
+
+      try {
+        setLoading(true)
+        setError(null)
+        console.log('🔍 Fetching need data for donor view, ID:', resolvedParams.id)
+
+        const response = await fetch(`/api/soroban/need-reports/get?reportId=${resolvedParams.id}`)
+        const data = await response.json()
+
+        if (response.ok && data.success && data.reports) {
+          const transformedNeed = transformApiNeedToDetails(data.reports)
+          console.log('✅ Need data loaded for donor view:', transformedNeed)
+          setNeedDetails(transformedNeed)
+        } else {
+          console.error('❌ Failed to fetch need:', data.error)
+          setError(data.error || 'Failed to fetch need data')
+          toast.error('Failed to load need data')
+        }
+      } catch (error: any) {
+        console.error('❌ Error fetching need:', error)
+        setError('Failed to load need data')
+        toast.error('Failed to load need data')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchNeed()
+  }, [resolvedParams.id])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-950">
+        <header className="px-4 md:px-6 h-16 flex items-center justify-between border-b bg-white dark:bg-gray-900 sticky top-0 z-10">
+          <Link href="/" className="flex items-center justify-center gap-2">
+            <HandHeart className="h-6 w-6 text-teal-500" />
+            <span className="font-bold text-xl text-gray-800 dark:text-white">DONARIA</span>
+          </Link>
+          <Link href="/dashboard/donor">
+            <Button variant="outline" size="sm" className="bg-transparent">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Needs
+            </Button>
+          </Link>
+        </header>
+        <div className="text-center py-16">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <h2 className="text-xl font-semibold">Loading need details...</h2>
+          <p className="text-muted-foreground mt-2">Fetching information from the blockchain</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !needDetails) {
+    return (
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-950">
+        <header className="px-4 md:px-6 h-16 flex items-center justify-between border-b bg-white dark:bg-gray-900 sticky top-0 z-10">
+          <Link href="/" className="flex items-center justify-center gap-2">
+            <HandHeart className="h-6 w-6 text-teal-500" />
+            <span className="font-bold text-xl text-gray-800 dark:text-white">DONARIA</span>
+          </Link>
+          <Link href="/dashboard/donor">
+            <Button variant="outline" size="sm" className="bg-transparent">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Needs
+            </Button>
+          </Link>
+        </header>
+        <div className="p-4 md:p-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center py-16 border-2 border-dashed border-red-200 dark:border-red-800 rounded-lg">
+              <h2 className="text-xl font-semibold text-red-600 dark:text-red-400">Error loading need</h2>
+              <p className="text-muted-foreground mt-2">{error || 'Need not found'}</p>
+              <Link href="/dashboard/donor">
+                <Button className="mt-4">Back to Donor Dashboard</Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-950">
       <header className="px-4 md:px-6 h-16 flex items-center justify-between border-b bg-white dark:bg-gray-900 sticky top-0 z-10">

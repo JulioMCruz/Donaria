@@ -60,8 +60,8 @@ export function DonationInteractionCard({ need }: DonationInteractionCardProps) 
             <Progress value={progress} />
           </div>
           <div className="flex justify-between text-base">
-            <span className="font-bold text-teal-600 dark:text-teal-400">${need.amountRaised.toLocaleString()}</span>
-            <span className="text-muted-foreground">raised of ${need.amountNeeded.toLocaleString()}</span>
+            <span className="font-bold text-teal-600 dark:text-teal-400">${(need.amountRaised / 100).toLocaleString()}</span>
+            <span className="text-muted-foreground">raised of ${(need.amountNeeded / 100).toLocaleString()}</span>
           </div>
         </div>
 
