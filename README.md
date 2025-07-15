@@ -57,10 +57,12 @@ Unlike traditional blockchain applications that require users to install wallet 
 - Private keys encrypted and stored server-side with enterprise-grade security
 - Users interact through our intuitive UI, not complex wallet interfaces
 
-**Gasless Transactions (App-Sponsored)**
-- Our funding account automatically pays all transaction fees
-- Users experience instant, free interactions with the blockchain
-- Fallback to user-paid transactions available for advanced users who prefer it
+**Pure Stellar SDK Integration with Fee Sponsorship**
+- Direct integration with Stellar JavaScript SDK for maximum reliability
+- Platform pays all transaction fees using STELLAR_FUNDING_SECRET account
+- User accounts provide authorization for contract calls through Soroban auth framework
+- Optimistic confirmation pattern for immediate user feedback
+- Transaction verification via blockchain explorer links
 
 **Social Login Integration**
 - Seamless onboarding through familiar social providers
@@ -85,10 +87,10 @@ This architecture makes Donaria accessible to everyone, not just crypto enthusia
 - **Multi-Language Support**: Accessible to global communities (coming soon)
 
 #### 💰 Financial Innovation
-- **Gasless Transactions**: Users never pay blockchain fees - all covered by the platform
-- **Micro-Donations**: Support causes with as little as $0.01 equivalent
-- **Cross-Border Payments**: Send aid anywhere in seconds, not days
 - **Zero User Fees**: Platform sponsors all blockchain transaction costs
+- **Micro-Donations**: Support causes with as little as $0.01 equivalent  
+- **Cross-Border Payments**: Send aid anywhere in seconds, not days
+- **Transparent Costs**: All platform sponsorship visible and trackable
 - **Real-Time Settlement**: Instant delivery to beneficiary wallets
 - **Multi-Currency Support**: XLM, USDC, and other Stellar assets
 
@@ -120,14 +122,15 @@ This architecture makes Donaria accessible to everyone, not just crypto enthusia
 - **Change Logging**: Immutable audit trail for all report modifications
 - **Admin Controls**: Verification and status management system
 - **Statistics Tracking**: Real-time platform metrics and analytics
-- **App-Sponsored Transactions**: Zero gas fees for users
+- **Fee Sponsorship**: Platform pays all transaction fees via STELLAR_FUNDING_SECRET
 
 ### Key Security Features
 - PIN-based private key encryption
-- App-sponsored gasless transactions
+- Pure Stellar SDK integration for maximum reliability
 - Firebase Admin SDK for secure operations
 - Smart contract transparency and immutability
 - Client-side wallet management with full user control
+- Optimistic confirmation with blockchain verification
 
 ## Architecture
 
@@ -158,8 +161,8 @@ flowchart TB
     subgraph Blockchain [Stellar Network]
         STELLAR[Stellar Blockchain]
         HORIZON[Horizon API]
-        GASLESS[App-Sponsored Txns]
-        FUNDING_WALLET[Platform Funding Wallet]
+        SDK[Stellar SDK Integration]
+        USER_WALLET[User Wallet Pays Fees]
     end
     
     subgraph Storage [Data Storage]
@@ -191,10 +194,10 @@ flowchart TB
     CREATE_API --> FIREBASE_STORAGE
     CREATE_API --> CONTRACT
     
-    %% Gasless Transaction Flow
-    CONTRACT --> GASLESS
-    GASLESS --> FUNDING_WALLET
-    FUNDING_WALLET --> STELLAR
+    %% Stellar SDK Transaction Flow
+    CONTRACT --> SDK
+    SDK --> USER_WALLET
+    USER_WALLET --> STELLAR
     
     %% Data Storage Flow
     CREATE_API --> FIRESTORE
@@ -214,8 +217,8 @@ flowchart TB
     FUNDING_API --> STELLAR
     USERS_API --> FIRESTORE
     
-    style GASLESS fill:#e1f5fe
-    style FUNDING_WALLET fill:#e8f5e8
+    style SDK fill:#e1f5fe
+    style USER_WALLET fill:#e8f5e8
     style CONTRACT fill:#fff3e0
     style AUTH fill:#f3e5f5
 ```
@@ -286,7 +289,7 @@ sequenceDiagram
     participant ST as Stellar Network
     participant D as Donors
     
-    Note over B,D: Gasless Need Creation
+    Note over B,D: User-Paid Need Creation
     B->>DA: Social Login (Google/X/Instagram)
     DA->>DA: Auto-Generate Wallet + PIN
     DA->>FW: Fund User Wallet (1 XLM)
@@ -296,9 +299,9 @@ sequenceDiagram
     DA->>FB: Store Images with Report ID
     FB-->>DA: Return Image URLs
     
-    Note over B,D: Smart Contract Deployment
-    DA->>FW: Use Platform Wallet for Gas
-    FW->>SC: Create Need Report (Gasless for User)
+    Note over B,D: Smart Contract with Stellar SDK
+    DA->>B: User Account Authorizes Transaction
+    B->>SC: Create Need Report (User Pays ~$0.00001)
     SC->>SC: Generate Unique Report ID
     SC->>SC: Store: Title, Description, Location, Category, Amount, Images
     SC->>SC: Log: Creation Event with Timestamp
@@ -315,9 +318,9 @@ sequenceDiagram
     D->>ST: Send Donation to Beneficiary
     ST->>B: Funds Received
     
-    Note over B,D: Admin Verification (Gasless)
-    DA->>FW: Admin Wallet Signs
-    FW->>SC: Update Status (pending → verified)
+    Note over B,D: Admin Verification (Low-Cost)
+    DA->>DA: Admin Account Authorizes
+    DA->>SC: Update Status (pending → verified) - Admin Pays
     SC->>SC: Log: Status Change + Admin Notes
     SC-->>DA: Verification Complete
     DA->>B: Notify: Need Verified
@@ -331,20 +334,20 @@ sequenceDiagram
     SC-->>DA: Return: Total Reports, Amounts, Status Distribution
     DA-->>D: Show: Complete Audit Trail
     
-    Note over B,D: Zero-Fee Updates
+    Note over B,D: Low-Cost Updates with Optimistic Confirmation
     B->>DA: Update Need Information
-    DA->>FW: Platform Sponsors Gas
-    FW->>SC: Update Report (with Change Reason)
+    DA->>B: User Account Authorizes Update
+    B->>SC: Update Report (with Change Reason) - User Pays
     SC->>SC: Log: Field Changes + Old/New Values
-    SC-->>DA: Update Successful
-    DA-->>B: Changes Saved to Blockchain
+    SC-->>DA: Update Successful (Optimistic Response)
+    DA-->>B: Changes Saved - Transaction Hash Provided
 ```
 
-## 🚀 Gasless Transaction System
+## 🚀 Pure Stellar SDK Transaction System
 
-### How App-Sponsored Transactions Work
+### How Low-Cost User-Paid Transactions Work
 
-Donaria implements a revolutionary **gasless transaction system** where users never pay blockchain fees, making humanitarian aid accessible to everyone regardless of their cryptocurrency knowledge or financial capacity.
+Donaria implements a **pure Stellar SDK transaction system** with optimistic confirmation, where users pay minimal blockchain fees (~$0.00001 per transaction) while maintaining full control and receiving immediate feedback.
 
 #### 🔐 **Technical Implementation**
 
@@ -354,86 +357,102 @@ flowchart LR
         USER[User Action]
         SIGNIN[Social Sign-In]
         PIN[PIN Authentication]
+        WALLET[User Wallet]
     end
     
     subgraph AppLayer [App Infrastructure]
-        PLATFORM[Platform Wallet]
-        SECRET[STELLAR_FUNDING_SECRET]
-        SPONSOR[Transaction Sponsor]
+        SDK[Stellar SDK]
+        CONTRACT[Smart Contract Call]
+        OPTIMISTIC[Optimistic Response]
     end
     
     subgraph Blockchain [Stellar Network]
-        CONTRACT[Smart Contract]
+        SIMULATION[Transaction Simulation]
+        ASSEMBLY[assembleTransaction]
         STELLAR[Stellar Ledger]
-        FEES[Gas Fees]
+        FEES[Minimal Fees (~$0.00001)]
     end
     
     USER --> SIGNIN
     SIGNIN --> PIN
-    PIN --> PLATFORM
-    PLATFORM --> SECRET
-    SECRET --> SPONSOR
-    SPONSOR --> CONTRACT
+    PIN --> WALLET
+    WALLET --> SDK
+    SDK --> SIMULATION
+    SIMULATION --> ASSEMBLY
+    ASSEMBLY --> CONTRACT
     CONTRACT --> STELLAR
-    SPONSOR --> FEES
+    WALLET --> FEES
+    SDK --> OPTIMISTIC
     
-    style SPONSOR fill:#e8f5e8
-    style FEES fill:#ffebee
+    style SDK fill:#e8f5e8
+    style FEES fill:#e8f5e8
     style USER fill:#e3f2fd
+    style OPTIMISTIC fill:#fff3e0
 ```
 
 #### 💡 **Key Benefits**
 
 **For Beneficiaries:**
-- ✅ **Zero Barrier Entry**: Create need reports without owning cryptocurrency
-- ✅ **Immediate Access**: Start using the platform instantly after social login
-- ✅ **Focus on Need**: Concentrate on humanitarian crisis, not technical complexity
-- ✅ **Global Accessibility**: Available worldwide without local crypto infrastructure
+- ✅ **Low Barrier Entry**: Create need reports with minimal cost (~$0.00001)
+- ✅ **Immediate Feedback**: Optimistic confirmation with instant user response
+- ✅ **Full Control**: Users maintain ownership of their accounts and transactions
+- ✅ **Blockchain Verification**: Transaction hashes provided for public verification
 
 **For Donors:**
-- ✅ **Simplified Giving**: Donate without understanding blockchain fees
-- ✅ **Maximum Impact**: 100% of donation reaches beneficiaries
+- ✅ **Transparent Costs**: All fees visible and minimal
+- ✅ **Maximum Impact**: Nearly 100% of donation reaches beneficiaries  
 - ✅ **Trust & Transparency**: All transactions publicly verifiable on blockchain
-- ✅ **Micro-Donations**: Support causes with any amount, no minimum fees
+- ✅ **Reliable Technology**: Pure Stellar SDK ensures maximum compatibility
 
 **For the Platform:**
-- ✅ **Predictable Costs**: Fixed operational expenses for transaction processing
-- ✅ **User Retention**: Eliminate friction that causes user drop-off
-- ✅ **Scalable Model**: Sustainable economics as user base grows
-- ✅ **Regulatory Compliance**: Simplified compliance without user-to-user crypto transfers
+- ✅ **No Gas Costs**: Users pay their own minimal transaction fees
+- ✅ **Stellar SDK Reliability**: Direct integration with official Stellar technology
+- ✅ **Vercel Compatible**: No CLI dependencies, works perfectly on serverless
+- ✅ **Simple Architecture**: Fewer moving parts, more reliable system
 
 #### 🔧 **Security Model**
 
 ```typescript
-// User Authentication: Private key proves ownership
-const userAuth = {
-  privateKey: userPrivateKey,  // User controls identity
-  authorization: true          // User approves action
+// User Authentication & Payment: User controls everything
+const userTransaction = {
+  privateKey: userPrivateKey,     // User controls identity
+  authorization: true,            // User approves action
+  feePayer: userPublicKey,       // User pays minimal fees
+  control: 'user'                // User maintains full control
 }
 
-// App Sponsorship: Platform wallet pays fees
-const appSponsorship = {
-  fundingWallet: STELLAR_FUNDING_SECRET,  // Platform pays gas
-  gasless: true,                          // User pays nothing
-  control: 'platform'                     // App manages costs
+// Stellar SDK Process: Official library handles all complexity
+const stellarSDKProcess = {
+  simulation: 'server.simulateTransaction()', // Pre-validate transaction
+  assembly: 'assembleTransaction()',          // Handle authorization
+  signing: 'transaction.sign(userKeypair)',   // User signs transaction
+  submission: 'server.sendTransaction()',     // Submit to network
+  confirmation: 'optimistic + hash'           // Immediate response + verification
 }
 
-// Result: User-controlled + Platform-sponsored
+// Result: User-controlled + SDK-reliable + Vercel-compatible
 const transaction = {
-  creator: userPublicKey,      // User owns the action
-  sponsor: platformWallet,     // Platform pays the fees
-  immutable: true,            // Permanently recorded
-  transparent: true           // Publicly verifiable
+  creator: userPublicKey,         // User owns the action
+  payer: userPublicKey,          // User pays the minimal fees
+  immutable: true,               // Permanently recorded
+  transparent: true,             // Publicly verifiable
+  hash: transactionHash          // Blockchain verification link
 }
 ```
 
 #### 📊 **Economic Sustainability**
 
 **Cost Structure:**
-- **Average Transaction Cost**: ~$0.00001 USD per smart contract call
-- **Daily Volume Estimate**: 1,000 need reports + 5,000 updates = ~$0.06/day
-- **Monthly Operating Cost**: ~$1.80 for transaction fees
-- **Annual Blockchain Costs**: ~$22 for unlimited humanitarian aid operations
+- **Average Transaction Cost**: ~$0.00001 USD per smart contract call (paid by user)
+- **Platform Operating Cost**: $0 for blockchain transactions
+- **User Cost**: ~$0.00001 per need report creation/update
+- **Maximum User Daily Cost**: ~$0.0001 for heavy usage (10 transactions)
+
+**Benefits:**
+- **No Platform Gas Costs**: Zero blockchain infrastructure costs
+- **Predictable User Costs**: Users know exactly what they'll pay
+- **Sustainable Model**: Platform focuses on features, not gas subsidies
+- **Full Decentralization**: Users maintain complete control of their transactions
 
 **Revenue Model:**
 - Optional platform fees on large donations (>$1,000)
@@ -441,15 +460,16 @@ const transaction = {
 - API access for humanitarian organizations
 - Partnership revenue with verified aid organizations
 
-This gasless system removes the **biggest barrier** to blockchain adoption in humanitarian aid: the requirement to understand and pay transaction fees. Users focus on what matters - helping others or getting help - while the platform handles all technical complexity.
+This approach removes complexity while maintaining the **core benefits** of blockchain: transparency, immutability, and user control. Users pay tiny fees directly, ensuring sustainable economics without hidden costs.
 
 ## 📋 Smart Contract Integration
 
 ### Contract Details
-- **Contract Address**: `CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW`
+- **Contract Address**: `CCONK5WC3MDUIOJJ4G3KFO4BXYYMP3GWSLMFANDULFETRFCOMJ3ZWLY7`
 - **Network**: Stellar Testnet (soon Mainnet)
 - **Language**: Rust (Soroban)
 - **Features**: CRUD operations, change logging, admin controls, statistics
+- **Integration**: Pure Stellar SDK with optimistic confirmation
 
 ### Live Contract Statistics
 ```json

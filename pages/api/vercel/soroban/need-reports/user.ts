@@ -1,11 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { 
   Contract, 
-  SorobanRpc, 
   Keypair, 
   Networks, 
   TransactionBuilder,
-  Operation,
+  Account,
   Address,
   nativeToScVal,
   scValToNative
@@ -14,7 +13,21 @@ import {
 const NEED_REPORTS_CONTRACT_ID = process.env.NEED_REPORTS_CONTRACT_ID || 'CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW'
 
 // Initialize Soroban RPC server
-const server = new SorobanRpc.Server('https://soroban-testnet.stellar.org')
+let server: any
+
+try {
+  const StellarSdk = require('@stellar/stellar-sdk')
+  
+  if (StellarSdk.rpc && StellarSdk.rpc.Server) {
+    server = new StellarSdk.rpc.Server('https://soroban-testnet.stellar.org')
+    console.log('✅ Soroban RPC server initialized successfully')
+  } else {
+    console.error('❌ StellarSdk.rpc.Server not found in SDK')
+    throw new Error('Stellar SDK rpc.Server not available')
+  }
+} catch (error) {
+  console.error('❌ Failed to initialize Soroban server:', error)
+}
 
 // Helper function to call contract methods
 async function callContract(contractId: string, method: string, args: any[] = [], sourceSecret?: string) {
@@ -33,17 +46,10 @@ async function callContract(contractId: string, method: string, args: any[] = []
       // Build the operation
       const operation = contract.call(method, ...args)
       
-      // Simulate the transaction
-      const account = await server.getAccount(dummyKeypair.publicKey()).catch(() => {
-        // If account doesn't exist, create a dummy account object
-        return {
-          accountId: () => dummyKeypair.publicKey(),
-          sequenceNumber: () => '0',
-          getKeypair: () => dummyKeypair
-        }
-      })
+      // Create a proper account object for simulation
+      const account = new Account(dummyKeypair.publicKey(), '0')
       
-      const txBuilder = new TransactionBuilder(account as any, {
+      const txBuilder = new TransactionBuilder(account, {
         fee: '100',
         networkPassphrase: Networks.TESTNET,
       }).addOperation(operation).setTimeout(30)
@@ -122,7 +128,23 @@ async function callContract(contractId: string, method: string, args: any[] = []
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log('🚀 SDK Route called - need-reports/user')
+  console.log('📝 Method:', req.method)
+  console.log('📝 Query:', req.query)
+  console.log('📝 Headers:', req.headers)
+  
+  // Check if server is initialized
+  if (!server) {
+    console.error('❌ Soroban RPC server not initialized')
+    return res.status(500).json({ 
+      success: false, 
+      error: 'Soroban RPC server not available. Check SDK configuration.',
+      details: 'Server initialization failed during module load'
+    })
+  }
+  
   if (req.method !== 'GET') {
+    console.log('❌ Wrong method:', req.method)
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
@@ -130,19 +152,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('🔍 Fetching user reports from smart contract')
     
     const { userAddress } = req.query
+    console.log('👤 Extracted userAddress:', userAddress)
     
     if (!userAddress || typeof userAddress !== 'string') {
+      console.log('❌ Invalid userAddress:', userAddress, typeof userAddress)
       return res.status(400).json({ error: 'userAddress parameter is required' })
     }
     
     console.log('👤 Fetching reports for user:', userAddress.substring(0, 10) + '...')
     
     // Call the smart contract to get user reports using Stellar SDK
-    const userAddressParam = Address.fromString(userAddress)
+    console.log('🔄 Converting Stellar account address using Address constructor...')
+    
+    let address
+    try {
+      // Use new Address() constructor as per Stellar SDK documentation
+      // https://developers.stellar.org/docs/build/guides/conversions/address-conversions#conversions-in-smart-contracts
+      address = new Address(userAddress)
+      console.log('✅ Address created successfully using new Address() constructor')
+    } catch (addressError: any) {
+      console.log('⚠️ Invalid address format, returning empty results for user experience')
+      // Return empty results instead of crashing for invalid addresses
+      return res.status(200).json({
+        success: true,
+        reports: [],
+        userAddress,
+        totalCount: 0,
+        warning: 'Invalid address format or unsupported address type'
+      })
+    }
+    
     const result = await callContract(
       NEED_REPORTS_CONTRACT_ID, 
       'get_user_reports', 
-      [nativeToScVal(userAddressParam, { type: 'address' })]
+      [address.toScVal()]
     )
     
     console.log('📋 Raw contract response:', result)
@@ -156,19 +199,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         
         // Transform the reports to match the frontend interface
         reports = reports.map((report: any) => ({
-          id: report.id?.toString() || '0',
+          id: typeof report.id === 'bigint' ? Number(report.id) : (parseInt(report.id) || 0),
           title: report.title || 'Untitled Report',
           description: report.description || '',
           location: report.location || '',
           category: report.category || '',
-          amountNeeded: parseInt(report.amount_needed) || 0,
-          amountRaised: parseInt(report.amount_raised) || 0,
+          amountNeeded: typeof report.amount_needed === 'bigint' ? Number(report.amount_needed) : (parseInt(report.amount_needed) || 0),
+          amountRaised: typeof report.amount_raised === 'bigint' ? Number(report.amount_raised) : (parseInt(report.amount_raised) || 0),
           status: mapContractStatus(report.status || 'pending'),
           imageUrl: report.image_urls && report.image_urls.length > 0 ? report.image_urls[0] : '/placeholder.svg',
           imageUrls: report.image_urls || [],
           creator: report.creator || userAddress,
-          createdAt: report.created_at || Date.now(),
-          updatedAt: report.updated_at || Date.now(),
+          createdAt: typeof report.created_at === 'bigint' ? Number(report.created_at) : (parseInt(report.created_at) || Date.now()),
+          updatedAt: typeof report.updated_at === 'bigint' ? Number(report.updated_at) : (parseInt(report.updated_at) || Date.now()),
           verificationNotes: report.verification_notes || ''
         }))
       }

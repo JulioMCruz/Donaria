@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { 
   Contract, 
-  SorobanRpc, 
   Keypair, 
   Networks, 
   TransactionBuilder,
+  Account,
   Address,
   nativeToScVal,
   scValToNative
@@ -13,7 +13,21 @@ import {
 const NEED_REPORTS_CONTRACT_ID = process.env.NEED_REPORTS_CONTRACT_ID || 'CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW'
 
 // Initialize Soroban RPC server
-const server = new SorobanRpc.Server('https://soroban-testnet.stellar.org')
+let server: any
+
+try {
+  const StellarSdk = require('@stellar/stellar-sdk')
+  
+  if (StellarSdk.rpc && StellarSdk.rpc.Server) {
+    server = new StellarSdk.rpc.Server('https://soroban-testnet.stellar.org')
+    console.log('✅ Get route: Soroban RPC server initialized successfully')
+  } else {
+    console.error('❌ Get route: StellarSdk.rpc.Server not found in SDK')
+    throw new Error('Stellar SDK rpc.Server not available')
+  }
+} catch (error) {
+  console.error('❌ Get route: Failed to initialize Soroban server:', error)
+}
 
 // Helper function to call contract methods (read-only)
 async function callContract(contractId: string, method: string, args: any[] = []) {
@@ -31,15 +45,8 @@ async function callContract(contractId: string, method: string, args: any[] = []
     // Build the operation
     const operation = contract.call(method, ...args)
     
-    // Simulate the transaction
-    const account = await server.getAccount(dummyKeypair.publicKey()).catch(() => {
-      // If account doesn't exist, create a dummy account object
-      return {
-        accountId: () => dummyKeypair.publicKey(),
-        sequenceNumber: () => '0',
-        getKeypair: () => dummyKeypair
-      }
-    })
+    // Create a proper account object for simulation
+    const account = new Account(dummyKeypair.publicKey(), '0')
     
     const txBuilder = new TransactionBuilder(account as any, {
       fee: '100',
@@ -84,13 +91,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Get specific report
       console.log('📋 Fetching specific report:', reportId)
       contractMethod = 'get_report'
-      contractArgs = [nativeToScVal(parseInt(reportId), { type: 'u32' })]
+      contractArgs = [nativeToScVal(parseInt(reportId), { type: 'u64' })]
       
     } else if (userAddress && typeof userAddress === 'string') {
       // Get reports by user
       console.log('👤 Fetching reports for user:', userAddress.substring(0, 10) + '...')
       contractMethod = 'get_user_reports'
-      contractArgs = [nativeToScVal(Address.fromString(userAddress), { type: 'address' })]
+      // Convert string to Address using official Stellar SDK method with error handling
+      try {
+        const address = new Address(userAddress)
+        contractArgs = [address.toScVal()]
+      } catch (addressError) {
+        console.log('⚠️ Invalid address format, skipping user address filter')
+        // Fall back to getting all reports if address is invalid
+        console.log('📑 Fetching all reports due to invalid address')
+        contractMethod = 'get_all_reports'
+        contractArgs = [
+          nativeToScVal(parseInt(offset as string), { type: 'u32' }),
+          nativeToScVal(parseInt(limit as string), { type: 'u32' })
+        ]
+      }
       
     } else if (status && typeof status === 'string') {
       // Get reports by status
@@ -119,37 +139,37 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (reportId) {
         // Single report case
         reports = result ? {
-          id: result.id?.toString() || '0',
+          id: typeof result.id === 'bigint' ? Number(result.id) : (parseInt(result.id) || 0),
           title: result.title || 'Untitled Report',
           description: result.description || '',
           location: result.location || '',
           category: result.category || '',
-          amountNeeded: parseInt(result.amount_needed) || 0,
-          amountRaised: parseInt(result.amount_raised) || 0,
+          amountNeeded: typeof result.amount_needed === 'bigint' ? Number(result.amount_needed) : (parseInt(result.amount_needed) || 0),
+          amountRaised: typeof result.amount_raised === 'bigint' ? Number(result.amount_raised) : (parseInt(result.amount_raised) || 0),
           status: mapContractStatus(result.status || 'pending'),
           imageUrl: result.image_urls && result.image_urls.length > 0 ? result.image_urls[0] : '/placeholder.svg',
           imageUrls: result.image_urls || [],
           creator: result.creator || '',
-          createdAt: result.created_at || Date.now(),
-          updatedAt: result.updated_at || Date.now(),
+          createdAt: typeof result.created_at === 'bigint' ? Number(result.created_at) : (parseInt(result.created_at) || Date.now()),
+          updatedAt: typeof result.updated_at === 'bigint' ? Number(result.updated_at) : (parseInt(result.updated_at) || Date.now()),
           verificationNotes: result.verification_notes || ''
         } : null
       } else {
         // Multiple reports case
         reports = Array.isArray(result) ? result.map((report: any) => ({
-          id: report.id?.toString() || '0',
+          id: typeof report.id === 'bigint' ? Number(report.id) : (parseInt(report.id) || 0),
           title: report.title || 'Untitled Report',
           description: report.description || '',
           location: report.location || '',
           category: report.category || '',
-          amountNeeded: parseInt(report.amount_needed) || 0,
-          amountRaised: parseInt(report.amount_raised) || 0,
+          amountNeeded: typeof report.amount_needed === 'bigint' ? Number(report.amount_needed) : (parseInt(report.amount_needed) || 0),
+          amountRaised: typeof report.amount_raised === 'bigint' ? Number(report.amount_raised) : (parseInt(report.amount_raised) || 0),
           status: mapContractStatus(report.status || 'pending'),
           imageUrl: report.image_urls && report.image_urls.length > 0 ? report.image_urls[0] : '/placeholder.svg',
           imageUrls: report.image_urls || [],
           creator: report.creator || '',
-          createdAt: report.created_at || Date.now(),
-          updatedAt: report.updated_at || Date.now(),
+          createdAt: typeof report.created_at === 'bigint' ? Number(report.created_at) : (parseInt(report.created_at) || Date.now()),
+          updatedAt: typeof report.updated_at === 'bigint' ? Number(report.updated_at) : (parseInt(report.updated_at) || Date.now()),
           verificationNotes: report.verification_notes || ''
         })) : []
       }

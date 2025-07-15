@@ -65,7 +65,21 @@ export default function DonorDashboard() {
       setError(null)
       console.log('🔍 Fetching all needs from smart contract...')
 
-      const response = await fetch('/api/soroban/need-reports/get')
+      // Use direct SDK route in development, rewrite handles it in production
+      const isDevelopment = window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1' ||
+                           window.location.hostname.includes('ngrok.io') ||
+                           process.env.NODE_ENV === 'development'
+      const apiUrl = isDevelopment
+        ? '/api/vercel/soroban/need-reports/get'
+        : '/api/soroban/need-reports/get'
+      
+      console.log('🌍 Environment:', process.env.NODE_ENV)
+      console.log('🌐 Hostname:', window.location.hostname)
+      console.log('🔧 isDevelopment:', isDevelopment)
+      console.log('🔗 API URL:', apiUrl)
+
+      const response = await fetch(apiUrl)
       const data = await response.json()
 
       if (response.ok && data.success) {

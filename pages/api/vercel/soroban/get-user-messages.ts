@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { 
   Contract, 
-  SorobanRpc, 
   Keypair, 
   Networks, 
   TransactionBuilder,
@@ -11,7 +10,21 @@ import {
 } from '@stellar/stellar-sdk'
 
 // Initialize Soroban RPC server
-const server = new SorobanRpc.Server('https://soroban-testnet.stellar.org')
+let server: any
+
+try {
+  const StellarSdk = require('@stellar/stellar-sdk')
+  
+  if (StellarSdk.rpc && StellarSdk.rpc.Server) {
+    server = new StellarSdk.rpc.Server('https://soroban-testnet.stellar.org')
+    console.log('✅ Get user messages route: Soroban RPC server initialized successfully')
+  } else {
+    console.error('❌ Get user messages route: StellarSdk.rpc.Server not found in SDK')
+    throw new Error('Stellar SDK rpc.Server not available')
+  }
+} catch (error) {
+  console.error('❌ Get user messages route: Failed to initialize Soroban server:', error)
+}
 
 // Helper function to call contract methods (read-only)
 async function callContract(contractId: string, method: string, args: any[] = []) {
@@ -86,7 +99,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Call the smart contract using Stellar SDK with actual user address
     const contractArgs = [
-      nativeToScVal(Address.fromString(userAddress), { type: 'address' }) // user
+      nativeToScVal(userAddress, { type: 'address' }) // user
     ]
     
     const result = await callContract(contractId, 'get_user_messages', contractArgs)

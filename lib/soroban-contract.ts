@@ -3,6 +3,21 @@
  * Handles interaction with the Message Storage contract
  */
 
+// Helper function to get the correct API URL based on environment
+function getApiUrl(endpoint: string): string {
+  if (typeof window !== 'undefined') {
+    const isDevelopment = window.location.hostname === 'localhost' || 
+                         window.location.hostname === '127.0.0.1' ||
+                         window.location.hostname.includes('ngrok.io') ||
+                         process.env.NODE_ENV === 'development'
+    return isDevelopment
+      ? `/api/vercel${endpoint}`
+      : endpoint
+  }
+  // Fallback for server-side rendering
+  return endpoint
+}
+
 export interface MessageStorageContract {
   contractId: string
   network: 'testnet' | 'mainnet'
@@ -37,7 +52,7 @@ export class SorobanContractService {
       })
       
       // Call the real smart contract using user's private key
-      const response = await fetch('/api/soroban/store-message-with-key', {
+      const response = await fetch(getApiUrl('/api/soroban/store-message-with-key'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,7 +97,7 @@ export class SorobanContractService {
       })
       
       // Call the real smart contract using API
-      const response = await fetch('/api/soroban/store-message', {
+      const response = await fetch(getApiUrl('/api/soroban/store-message'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -124,8 +139,8 @@ export class SorobanContractService {
         network: this.network
       })
       
-      // Call the real smart contract using Stellar CLI
-      const response = await fetch('/api/soroban/get-user-messages', {
+      // Call the real smart contract using Stellar SDK
+      const response = await fetch(getApiUrl('/api/soroban/get-user-messages'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -184,7 +199,7 @@ export class SorobanContractService {
       })
       
       // Call the real smart contract using API
-      const response = await fetch('/api/soroban/get-all-users', {
+      const response = await fetch(getApiUrl('/api/soroban/get-all-users'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -220,7 +235,7 @@ export class SorobanContractService {
       })
       
       // Call the real smart contract using API
-      const response = await fetch('/api/soroban/get-message-count', {
+      const response = await fetch(getApiUrl('/api/soroban/get-message-count'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

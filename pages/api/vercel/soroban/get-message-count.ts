@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { 
   Contract, 
-  SorobanRpc, 
   Keypair, 
   Networks, 
   TransactionBuilder,
@@ -9,7 +8,21 @@ import {
 } from '@stellar/stellar-sdk'
 
 // Initialize Soroban RPC server
-const server = new SorobanRpc.Server('https://soroban-testnet.stellar.org')
+let server: any
+
+try {
+  const StellarSdk = require('@stellar/stellar-sdk')
+  
+  if (StellarSdk.rpc && StellarSdk.rpc.Server) {
+    server = new StellarSdk.rpc.Server('https://soroban-testnet.stellar.org')
+    console.log('✅ Get message count route: Soroban RPC server initialized successfully')
+  } else {
+    console.error('❌ Get message count route: StellarSdk.rpc.Server not found in SDK')
+    throw new Error('Stellar SDK rpc.Server not available')
+  }
+} catch (error) {
+  console.error('❌ Get message count route: Failed to initialize Soroban server:', error)
+}
 
 // Helper function to call contract methods (read-only)
 async function callContract(contractId: string, method: string, args: any[] = []) {

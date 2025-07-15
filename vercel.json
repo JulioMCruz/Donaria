@@ -6,40 +6,12 @@
   },
   "rewrites": [
     {
-      "source": "/api/soroban/need-reports/create",
-      "destination": "/api/vercel/soroban/need-reports/create"
-    },
-    {
-      "source": "/api/soroban/store-message-with-key",
-      "destination": "/api/vercel/soroban/store-message-with-key"
-    },
-    {
-      "source": "/api/soroban/store-message",
-      "destination": "/api/vercel/soroban/store-message"
-    },
-    {
-      "source": "/api/soroban/get-all-users",
-      "destination": "/api/vercel/soroban/get-all-users"
-    },
-    {
-      "source": "/api/donations/process",
-      "destination": "/api/vercel/donations/process"
-    },
-    {
-      "source": "/api/funding",
-      "destination": "/api/vercel/funding"
-    },
-    {
-      "source": "/api/unlock-wallet",
-      "destination": "/api/vercel/unlock-wallet"
-    },
-    {
-      "source": "/api/check-funding-wallet",
-      "destination": "/api/vercel/check-funding-wallet"
-    },
-    {
       "source": "/api/soroban/need-reports/user",
       "destination": "/api/vercel/soroban/need-reports/user"
+    },
+    {
+      "source": "/api/soroban/need-reports/create",
+      "destination": "/api/vercel/soroban/need-reports/create"
     },
     {
       "source": "/api/soroban/need-reports/get",
@@ -58,12 +30,32 @@
       "destination": "/api/vercel/soroban/store-message-with-key"
     },
     {
+      "source": "/api/soroban/store-message",
+      "destination": "/api/vercel/soroban/store-message"
+    },
+    {
       "source": "/api/soroban/get-message-count",
       "destination": "/api/vercel/soroban/get-message-count"
     },
     {
       "source": "/api/soroban/get-user-messages",
       "destination": "/api/vercel/soroban/get-user-messages"
+    },
+    {
+      "source": "/api/donations/process",
+      "destination": "/api/vercel/donations/process"
+    },
+    {
+      "source": "/api/funding",
+      "destination": "/api/vercel/funding"
+    },
+    {
+      "source": "/api/unlock-wallet",
+      "destination": "/api/vercel/unlock-wallet"
+    },
+    {
+      "source": "/api/check-funding-wallet",
+      "destination": "/api/vercel/check-funding-wallet"
     }
   ]
 }

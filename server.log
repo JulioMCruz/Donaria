@@ -1,0 +1,2596 @@
+
+> my-v0-project@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.2.4
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.10.48:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1080ms
+ ✓ Compiled /api/vercel/soroban/need-reports/user in 226ms (116 modules)
+✅ Soroban RPC server initialized successfully
+🚀 SDK Route called - need-reports/user
+📝 Method: GET
+📝 Query: {
+  userAddress: 'GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ'
+}
+📝 Headers: {
+  host: 'localhost:3000',
+  'user-agent': 'curl/8.7.1',
+  accept: '*/*',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http',
+  'x-forwarded-for': '::1'
+}
+🔍 Fetching user reports from smart contract
+👤 Extracted userAddress: GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ
+👤 Fetching reports for user: GBJXS4QZQW...
+🔄 Converting Stellar account address to Soroban format...
+❌ Error fetching user reports: Error: Unsupported address type: GBDUESSYKM2FCWSRK5JFUSRXJIZVEVCHK5CUUSCXG5MUITCLJNCUQUBVKJDVCSZTKFLVGVCUI5KFOU2GIRIFOV2RIFI4SCI
+    at handler (pages/api/vercel/soroban/need-reports/user.ts:167:28)
+  165 |     console.log('🔄 Converting Stellar account address to Soroban format...')
+  166 |     // For Soroban, we need to use the Address.account method to convert G... to C... format
+> 167 |     const address = Address.account(userAddress)
+      |                            ^
+  168 |     console.log('✅ Address converted to Soroban format:', address.toString().substring(0, 10) + '...')
+  169 |     
+  170 |     const result = await callContract(
+ GET /api/vercel/soroban/need-reports/user?userAddress=GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ 500 in 373ms
+ ✓ Compiled in 113ms (116 modules)
+✅ Soroban RPC server initialized successfully
+🚀 SDK Route called - need-reports/user
+📝 Method: GET
+📝 Query: {
+  userAddress: 'GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ'
+}
+📝 Headers: {
+  host: 'localhost:3000',
+  'user-agent': 'curl/8.7.1',
+  accept: '*/*',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http',
+  'x-forwarded-for': '::1'
+}
+🔍 Fetching user reports from smart contract
+👤 Extracted userAddress: GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ
+👤 Fetching reports for user: GBJXS4QZQW...
+🔄 Creating ScVal for user address...
+✅ Address ScVal created successfully
+🔧 Calling contract method: get_user_reports
+📖 Using simulation for read-only operation
+❌ Contract call failed: Error: Simulation failed: HostError: Error(WasmVm, InvalidAction)
+
+Event log (newest first):
+   0: [Diagnostic Event] contract:CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, topics:[error, Error(WasmVm, InvalidAction)], data:["VM call trapped: UnreachableCodeReached", get_user_reports]
+   1: [Diagnostic Event] topics:[fn_call, CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, get_user_reports], data:"GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ"
+
+    at callContract (pages/api/vercel/soroban/need-reports/user.ts:62:14)
+    at async handler (pages/api/vercel/soroban/need-reports/user.ts:170:19)
+  60 |       
+  61 |       if (simulation.error) {
+> 62 |         throw new Error(`Simulation failed: ${simulation.error}`)
+     |              ^
+  63 |       }
+  64 |       
+  65 |       if (simulation.result?.retval) {
+❌ Error fetching user reports: Error: Simulation failed: HostError: Error(WasmVm, InvalidAction)
+
+Event log (newest first):
+   0: [Diagnostic Event] contract:CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, topics:[error, Error(WasmVm, InvalidAction)], data:["VM call trapped: UnreachableCodeReached", get_user_reports]
+   1: [Diagnostic Event] topics:[fn_call, CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, get_user_reports], data:"GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ"
+
+    at callContract (pages/api/vercel/soroban/need-reports/user.ts:62:14)
+    at async handler (pages/api/vercel/soroban/need-reports/user.ts:170:19)
+  60 |       
+  61 |       if (simulation.error) {
+> 62 |         throw new Error(`Simulation failed: ${simulation.error}`)
+     |              ^
+  63 |       }
+  64 |       
+  65 |       if (simulation.result?.retval) {
+ GET /api/vercel/soroban/need-reports/user?userAddress=GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ 500 in 165ms
+ ✓ Compiled in 114ms (101 modules)
+ ✓ Compiled /api/vercel/soroban/need-reports/user in 35ms (116 modules)
+✅ Soroban RPC server initialized successfully
+🚀 SDK Route called - need-reports/user
+📝 Method: GET
+📝 Query: {
+  userAddress: 'GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ'
+}
+📝 Headers: {
+  host: 'localhost:3000',
+  'user-agent': 'curl/8.7.1',
+  accept: '*/*',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http',
+  'x-forwarded-for': '::1'
+}
+🔍 Fetching user reports from smart contract
+👤 Extracted userAddress: GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ
+👤 Fetching reports for user: GBJXS4QZQW...
+🔄 Converting Stellar address for Soroban contract...
+❌ Error fetching user reports: Error: invalid checksum
+    at handler (pages/api/vercel/soroban/need-reports/user.ts:167:28)
+  165 |     console.log('🔄 Converting Stellar address for Soroban contract...')
+  166 |     // Create a Keypair from the public key to get proper address format
+> 167 |     const keypair = Keypair.fromPublicKey(userAddress)
+      |                            ^
+  168 |     const sorobanAddress = Address.fromString(keypair.publicKey())
+  169 |     console.log('✅ Address converted to Soroban format:', sorobanAddress.toString().substring(0, 10) + '...')
+  170 |     
+ GET /api/vercel/soroban/need-reports/user?userAddress=GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ 500 in 69ms
+ ✓ Compiled in 42ms (116 modules)
+✅ Soroban RPC server initialized successfully
+🚀 SDK Route called - need-reports/user
+📝 Method: GET
+📝 Query: {
+  userAddress: 'GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ'
+}
+📝 Headers: {
+  host: 'localhost:3000',
+  'user-agent': 'curl/8.7.1',
+  accept: '*/*',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http',
+  'x-forwarded-for': '::1'
+}
+🔍 Fetching user reports from smart contract
+👤 Extracted userAddress: GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ
+👤 Fetching reports for user: GBJXS4QZQW...
+🔄 Creating proper Soroban address...
+🔧 Using test address for development: GDAT5HWTGI...
+🔧 Calling contract method: get_user_reports
+📖 Using simulation for read-only operation
+❌ Contract call failed: Error: Simulation failed: HostError: Error(WasmVm, InvalidAction)
+
+Event log (newest first):
+   0: [Diagnostic Event] contract:CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, topics:[error, Error(WasmVm, InvalidAction)], data:["VM call trapped: UnreachableCodeReached", get_user_reports]
+   1: [Diagnostic Event] topics:[fn_call, CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, get_user_reports], data:"GDAT5HWTGIU4TSSZ4752OUC4SABDLTLZFRPZUJ3D6LKBNEPA7V2CIG54"
+
+    at callContract (pages/api/vercel/soroban/need-reports/user.ts:62:14)
+    at async handler (pages/api/vercel/soroban/need-reports/user.ts:170:19)
+  60 |       
+  61 |       if (simulation.error) {
+> 62 |         throw new Error(`Simulation failed: ${simulation.error}`)
+     |              ^
+  63 |       }
+  64 |       
+  65 |       if (simulation.result?.retval) {
+❌ Error fetching user reports: Error: Simulation failed: HostError: Error(WasmVm, InvalidAction)
+
+Event log (newest first):
+   0: [Diagnostic Event] contract:CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, topics:[error, Error(WasmVm, InvalidAction)], data:["VM call trapped: UnreachableCodeReached", get_user_reports]
+   1: [Diagnostic Event] topics:[fn_call, CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, get_user_reports], data:"GDAT5HWTGIU4TSSZ4752OUC4SABDLTLZFRPZUJ3D6LKBNEPA7V2CIG54"
+
+    at callContract (pages/api/vercel/soroban/need-reports/user.ts:62:14)
+    at async handler (pages/api/vercel/soroban/need-reports/user.ts:170:19)
+  60 |       
+  61 |       if (simulation.error) {
+> 62 |         throw new Error(`Simulation failed: ${simulation.error}`)
+     |              ^
+  63 |       }
+  64 |       
+  65 |       if (simulation.result?.retval) {
+ GET /api/vercel/soroban/need-reports/user?userAddress=GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ 500 in 104ms
+ ⨯ ./pages/api/vercel/soroban/need-reports/user.ts
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/osx/Projects/Stellar/mvp02/Donaria/pages/api/vercel/soroban/need-reports/user.ts[0m:239:1]
+ [2m236[0m | }
+ [2m237[0m | 
+ [2m238[0m | // Helper function to map contract status to frontend status
+ [2m239[0m | function mapContractStatus(contractStatus: string): "Pending" | "Verified" | "Funded" {
+     : [35;1m^[0m
+ [2m240[0m |   switch (contractStatus.toLowerCase()) {
+ [2m241[0m |     case 'pending':
+ [2m242[0m |       return 'Pending'
+     `----
+  [31mx[0m Expected '}', got '<eof>'
+     ,-[[36;1;4m/Users/osx/Projects/Stellar/mvp02/Donaria/pages/api/vercel/soroban/need-reports/user.ts[0m:251:1]
+ [2m248[0m |     default:
+ [2m249[0m |       return 'Pending'
+ [2m250[0m |   }
+ [2m251[0m | }
+     : [35;1m^[0m
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./pages/api/vercel/soroban/need-reports/user.ts
+ ⨯ ./pages/api/vercel/soroban/need-reports/user.ts
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/osx/Projects/Stellar/mvp02/Donaria/pages/api/vercel/soroban/need-reports/user.ts[0m:239:1]
+ [2m236[0m | }
+ [2m237[0m | 
+ [2m238[0m | // Helper function to map contract status to frontend status
+ [2m239[0m | function mapContractStatus(contractStatus: string): "Pending" | "Verified" | "Funded" {
+     : [35;1m^[0m
+ [2m240[0m |   switch (contractStatus.toLowerCase()) {
+ [2m241[0m |     case 'pending':
+ [2m242[0m |       return 'Pending'
+     `----
+  [31mx[0m Expected '}', got '<eof>'
+     ,-[[36;1;4m/Users/osx/Projects/Stellar/mvp02/Donaria/pages/api/vercel/soroban/need-reports/user.ts[0m:251:1]
+ [2m248[0m |     default:
+ [2m249[0m |       return 'Pending'
+ [2m250[0m |   }
+ [2m251[0m | }
+     : [35;1m^[0m
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./pages/api/vercel/soroban/need-reports/user.ts
+ ✓ Compiled in 38ms (116 modules)
+✅ Soroban RPC server initialized successfully
+🚀 SDK Route called - need-reports/user
+📝 Method: GET
+📝 Query: { userAddress: 'test' }
+📝 Headers: {
+  host: 'localhost:3000',
+  'user-agent': 'curl/8.7.1',
+  accept: '*/*',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http',
+  'x-forwarded-for': '::1'
+}
+🔍 Fetching user reports from smart contract
+👤 Extracted userAddress: test
+👤 Fetching reports for user: test...
+🔄 Converting address using proper Address constructor...
+❌ Error fetching user reports: Error: Unsupported address type: GB2GK43U5CLQ
+    at handler (pages/api/vercel/soroban/need-reports/user.ts:172:31)
+  170 |     } else {
+  171 |       // Convert G... address to C... format for Soroban contracts
+> 172 |       sorobanAddress = Address.account(userAddress)
+      |                               ^
+  173 |     }
+  174 |     
+  175 |     console.log('✅ Address converted successfully')
+ GET /api/vercel/soroban/need-reports/user?userAddress=test 500 in 27ms
+ ✓ Compiled in 100ms (116 modules)
+✅ Soroban RPC server initialized successfully
+🚀 SDK Route called - need-reports/user
+📝 Method: GET
+📝 Query: {
+  userAddress: 'GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ'
+}
+📝 Headers: {
+  host: 'localhost:3000',
+  'user-agent': 'curl/8.7.1',
+  accept: '*/*',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http',
+  'x-forwarded-for': '::1'
+}
+🔍 Fetching user reports from smart contract
+👤 Extracted userAddress: GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ
+👤 Fetching reports for user: GBJXS4QZQW...
+🔄 For now, returning mock data while we figure out address conversion...
+📋 Mock contract response: []
+✅ Found 0 reports for user
+ GET /api/vercel/soroban/need-reports/user?userAddress=GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ 200 in 6ms
+ ✓ Compiled in 40ms (116 modules)
+✅ Soroban RPC server initialized successfully
+🚀 SDK Route called - need-reports/user
+📝 Method: GET
+📝 Query: {
+  userAddress: 'GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ'
+}
+📝 Headers: {
+  host: 'localhost:3000',
+  'user-agent': 'curl/8.7.1',
+  accept: '*/*',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http',
+  'x-forwarded-for': '::1'
+}
+🔍 Fetching user reports from smart contract
+👤 Extracted userAddress: GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ
+👤 Fetching reports for user: GBJXS4QZQW...
+🔄 Converting string to Address using official Stellar SDK method...
+❌ Error fetching user reports: Error: Unsupported address type: GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ
+    at handler (pages/api/vercel/soroban/need-reports/user.ts:169:28)
+  167 |     // Use Address.fromString() as per Stellar documentation
+  168 |     // https://developers.stellar.org/docs/build/guides/conversions/string-conversions#string-to-address
+> 169 |     const address = Address.fromString(userAddress)
+      |                            ^
+  170 |     console.log('✅ Address converted successfully using Address.fromString()')
+  171 |     
+  172 |     const result = await callContract(
+ GET /api/vercel/soroban/need-reports/user?userAddress=GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ 500 in 29ms
+ ✓ Compiled in 37ms (116 modules)
+✅ Soroban RPC server initialized successfully
+🚀 SDK Route called - need-reports/user
+📝 Method: GET
+📝 Query: {
+  userAddress: 'GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ'
+}
+📝 Headers: {
+  host: 'localhost:3000',
+  'user-agent': 'curl/8.7.1',
+  accept: '*/*',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http',
+  'x-forwarded-for': '::1'
+}
+🔍 Fetching user reports from smart contract
+👤 Extracted userAddress: GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ
+👤 Fetching reports for user: GBJXS4QZQW...
+🔄 Converting Stellar account address using Address constructor...
+❌ Error fetching user reports: Error: Unsupported address type: GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ
+    at handler (pages/api/vercel/soroban/need-reports/user.ts:169:20)
+  167 |     // Use new Address() constructor as per Stellar SDK documentation
+  168 |     // https://developers.stellar.org/docs/build/guides/conversions/address-conversions#conversions-in-smart-contracts
+> 169 |     const address = new Address(userAddress)
+      |                    ^
+  170 |     console.log('✅ Address created successfully using new Address() constructor')
+  171 |     
+  172 |     const result = await callContract(
+ GET /api/vercel/soroban/need-reports/user?userAddress=GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ 500 in 27ms
+🚀 SDK Route called - need-reports/user
+📝 Method: GET
+📝 Query: {
+  userAddress: 'GDXT7PYMOITTDNJIF64JMSBRKQNBXROSOINFWS4BCVKUJHAWAV32YFUU'
+}
+📝 Headers: {
+  host: 'localhost:3000',
+  'user-agent': 'curl/8.7.1',
+  accept: '*/*',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http',
+  'x-forwarded-for': '::1'
+}
+🔍 Fetching user reports from smart contract
+👤 Extracted userAddress: GDXT7PYMOITTDNJIF64JMSBRKQNBXROSOINFWS4BCVKUJHAWAV32YFUU
+👤 Fetching reports for user: GDXT7PYMOI...
+🔄 Converting Stellar account address using Address constructor...
+✅ Address created successfully using new Address() constructor
+🔧 Calling contract method: get_user_reports
+📖 Using simulation for read-only operation
+📋 Raw contract response: []
+✅ Found 0 reports for user
+ GET /api/vercel/soroban/need-reports/user?userAddress=GDXT7PYMOITTDNJIF64JMSBRKQNBXROSOINFWS4BCVKUJHAWAV32YFUU 200 in 223ms
+🚀 SDK Route called - need-reports/user
+📝 Method: GET
+📝 Query: {
+  userAddress: 'GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ'
+}
+📝 Headers: {
+  host: 'localhost:3000',
+  'user-agent': 'curl/8.7.1',
+  accept: '*/*',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http',
+  'x-forwarded-for': '::1'
+}
+🔍 Fetching user reports from smart contract
+👤 Extracted userAddress: GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ
+👤 Fetching reports for user: GBJXS4QZQW...
+🔄 Converting Stellar account address using Address constructor...
+❌ Error fetching user reports: Error: Unsupported address type: GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ
+    at handler (pages/api/vercel/soroban/need-reports/user.ts:169:20)
+  167 |     // Use new Address() constructor as per Stellar SDK documentation
+  168 |     // https://developers.stellar.org/docs/build/guides/conversions/address-conversions#conversions-in-smart-contracts
+> 169 |     const address = new Address(userAddress)
+      |                    ^
+  170 |     console.log('✅ Address created successfully using new Address() constructor')
+  171 |     
+  172 |     const result = await callContract(
+ GET /api/vercel/soroban/need-reports/user?userAddress=GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ 500 in 21ms
+ ✓ Compiled in 96ms (116 modules)
+✅ Soroban RPC server initialized successfully
+🚀 SDK Route called - need-reports/user
+📝 Method: GET
+📝 Query: {
+  userAddress: 'GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ'
+}
+📝 Headers: {
+  host: 'localhost:3000',
+  'user-agent': 'curl/8.7.1',
+  accept: '*/*',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http',
+  'x-forwarded-for': '::1'
+}
+🔍 Fetching user reports from smart contract
+👤 Extracted userAddress: GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ
+👤 Fetching reports for user: GBJXS4QZQW...
+🔄 Converting Stellar account address using Address constructor...
+⚠️ Invalid address format, returning empty results for user experience
+ GET /api/vercel/soroban/need-reports/user?userAddress=GBJXS4QZQWRZJ7J3RTGWEJHW7YDLKKEHP5RGQK3QWSTTGTWSFDPWWQAQ 200 in 5ms
+🚀 SDK Route called - need-reports/user
+📝 Method: GET
+📝 Query: {
+  userAddress: 'GDXT7PYMOITTDNJIF64JMSBRKQNBXROSOINFWS4BCVKUJHAWAV32YFUU'
+}
+📝 Headers: {
+  host: 'localhost:3000',
+  'user-agent': 'curl/8.7.1',
+  accept: '*/*',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http',
+  'x-forwarded-for': '::1'
+}
+🔍 Fetching user reports from smart contract
+👤 Extracted userAddress: GDXT7PYMOITTDNJIF64JMSBRKQNBXROSOINFWS4BCVKUJHAWAV32YFUU
+👤 Fetching reports for user: GDXT7PYMOI...
+🔄 Converting Stellar account address using Address constructor...
+✅ Address created successfully using new Address() constructor
+🔧 Calling contract method: get_user_reports
+📖 Using simulation for read-only operation
+📋 Raw contract response: []
+✅ Found 0 reports for user
+ GET /api/vercel/soroban/need-reports/user?userAddress=GDXT7PYMOITTDNJIF64JMSBRKQNBXROSOINFWS4BCVKUJHAWAV32YFUU 200 in 316ms
+ ○ Compiling / ...
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+🔧 Firebase Configuration Debug:
+- API Key: ✅ Set
+- Auth Domain: ✅ Set
+- Project ID: ✅ Set
+- Storage Bucket: ✅ Set
+- Messaging Sender ID: ✅ Set
+- App ID: ✅ Set
+✅ All Firebase environment variables are set
+ GET / 200 in 2560ms
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+🔧 Firebase Configuration Debug:
+- API Key: ✅ Set
+- Auth Domain: ✅ Set
+- Project ID: ✅ Set
+- Storage Bucket: ✅ Set
+- Messaging Sender ID: ✅ Set
+- App ID: ✅ Set
+✅ All Firebase environment variables are set
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 639ms
+ GET / 200 in 36ms
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 17ms
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+🔍 Fetching wallet for firebaseUid: OuPwOZGC8HgZBEjDSfcPJi5oSAI2
+✅ Found user wallet: GCO55KO3K7...
+ GET /api/users/wallet?firebaseUid=OuPwOZGC8HgZBEjDSfcPJi5oSAI2 200 in 857ms
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+ GET /role-selection 200 in 316ms
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+ GET /dashboard/beneficiary 200 in 458ms
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+✅ Soroban RPC server initialized successfully
+🚀 SDK Route called - need-reports/user
+📝 Method: GET
+📝 Query: {
+  userAddress: 'GCO55KO3K77M2BKTCENTP6NCXVZIQME3WUVKT66C6JQQERINIOLVY2ZS'
+}
+📝 Headers: {
+  host: 'localhost:3000',
+  connection: 'keep-alive',
+  'sec-ch-ua-platform': '"macOS"',
+  'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+  'sec-ch-ua': '"Not)A;Brand";v="8", "Chromium";v="138", "Google Chrome";v="138"',
+  'sec-ch-ua-mobile': '?0',
+  accept: '*/*',
+  'sec-fetch-site': 'same-origin',
+  'sec-fetch-mode': 'cors',
+  'sec-fetch-dest': 'empty',
+  referer: 'http://localhost:3000/dashboard/beneficiary',
+  'accept-encoding': 'gzip, deflate, br, zstd',
+  'accept-language': 'en-US,en;q=0.9,es;q=0.8',
+  cookie: 'wp-settings-time-1=1742632971; __next_hmr_refresh_hash__=2c565db4a1aad6a2a5dfad867f930b00633457081244afec',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http',
+  'x-forwarded-for': '::1'
+}
+🔍 Fetching user reports from smart contract
+👤 Extracted userAddress: GCO55KO3K77M2BKTCENTP6NCXVZIQME3WUVKT66C6JQQERINIOLVY2ZS
+👤 Fetching reports for user: GCO55KO3K7...
+🔄 Converting Stellar account address using Address constructor...
+✅ Address created successfully using new Address() constructor
+🔧 Calling contract method: get_user_reports
+📖 Using simulation for read-only operation
+📋 Raw contract response: [
+  {
+    amount_needed: 50000n,
+    amount_raised: 0n,
+    category: 'education',
+    created_at: 1752487138n,
+    creator: 'GCO55KO3K77M2BKTCENTP6NCXVZIQME3WUVKT66C6JQQERINIOLVY2ZS',
+    description: 'Test with funding account paying fees',
+    id: 3n,
+    image_urls: [],
+    location: 'Test Location',
+    status: 'pending',
+    title: 'Test Funding Report',
+    updated_at: 1752487138n,
+    verification_notes: ''
+  },
+  {
+    amount_needed: 25000n,
+    amount_raised: 0n,
+    category: 'education',
+    created_at: 1752487578n,
+    creator: 'GCO55KO3K77M2BKTCENTP6NCXVZIQME3WUVKT66C6JQQERINIOLVY2ZS',
+    description: 'Testing the app-sponsored transaction pattern',
+    id: 4n,
+    image_urls: [],
+    location: 'Test Location',
+    status: 'pending',
+    title: 'App-Sponsored Test Report',
+    updated_at: 1752487578n,
+    verification_notes: ''
+  },
+  {
+    amount_needed: 100000n,
+    amount_raised: 0n,
+    category: 'education',
+    created_at: 1752493273n,
+    creator: 'GCO55KO3K77M2BKTCENTP6NCXVZIQME3WUVKT66C6JQQERINIOLVY2ZS',
+    description: 'Developer help',
+    id: 5n,
+    image_urls: [
+      'https://firebasestorage.googleapis.com/v0/b/stellar-latam.firebasestorage.app/o/need-reports%2Ftemp_1752493266912_7oxuapuqz%2F1752493266912_stylized-man-avatar.png?alt=media&token=8dd27f68-b140-49b5-8d4f-9b2e216f902e'
+    ],
+    location: 'Online',
+    status: 'pending',
+    title: 'Developer help',
+    updated_at: 1752493273n,
+    verification_notes: ''
+  },
+  {
+    amount_needed: 100000n,
+    amount_raised: 0n,
+    category: 'education',
+    created_at: 1752493834n,
+    creator: 'GCO55KO3K77M2BKTCENTP6NCXVZIQME3WUVKT66C6JQQERINIOLVY2ZS',
+    description: 'Developer help',
+    id: 6n,
+    image_urls: [
+      'https://firebasestorage.googleapis.com/v0/b/stellar-latam.firebasestorage.app/o/need-reports%2Ftemp_1752493827481_9cn6x7srw%2F1752493827481_stylized-man-avatar.png?alt=media&token=2086d89e-92f2-421a-87cd-0ebe658f3258'
+    ],
+    location: 'Online',
+    status: 'pending',
+    title: 'Developer help',
+    updated_at: 1752493834n,
+    verification_notes: ''
+  },
+  {
+    amount_needed: 50000n,
+    amount_raised: 0n,
+    category: 'food',
+    created_at: 1752495205n,
+    creator: 'GCO55KO3K77M2BKTCENTP6NCXVZIQME3WUVKT66C6JQQERINIOLVY2ZS',
+    description: 'Weekend emergency',
+    id: 7n,
+    image_urls: [
+      'https://firebasestorage.googleapis.com/v0/b/stellar-latam.firebasestorage.app/o/need-reports%2Ftemp_1752495197150_no7lxlpop%2F1752495197150_logo.png?alt=media&token=9760cc85-a7ec-45f0-898e-3061d91bd276',
+      'https://firebasestorage.googleapis.com/v0/b/stellar-latam.firebasestorage.app/o/need-reports%2Ftemp_1752497107582_7xkusu7f6%2F1752497107583_beneficiary-avatar.png?alt=media&token=eb22a837-5d77-439d-bc62-e166c0877a62',
+      'https://firebasestorage.googleapis.com/v0/b/stellar-latam.firebasestorage.app/o/need-reports%2Ftemp_1752520903101_2nl48iybn%2F1752520903101_stylized-man-avatar.png?alt=media&token=ea5b7d4b-6c32-48ea-8410-82e9e8f0b64f'
+    ],
+    location: 'Online',
+    status: 'pending',
+    title: 'Weekend emergency',
+    updated_at: 1752520908n,
+    verification_notes: ''
+  }
+]
+✅ Found 5 reports for user
+ GET /api/vercel/soroban/need-reports/user?userAddress=GCO55KO3K77M2BKTCENTP6NCXVZIQME3WUVKT66C6JQQERINIOLVY2ZS 200 in 384ms
+🚀 SDK Route called - need-reports/user
+📝 Method: GET
+📝 Query: {
+  userAddress: 'GCO55KO3K77M2BKTCENTP6NCXVZIQME3WUVKT66C6JQQERINIOLVY2ZS'
+}
+📝 Headers: {
+  host: 'localhost:3000',
+  connection: 'keep-alive',
+  'sec-ch-ua-platform': '"macOS"',
+  'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+  'sec-ch-ua': '"Not)A;Brand";v="8", "Chromium";v="138", "Google Chrome";v="138"',
+  'sec-ch-ua-mobile': '?0',
+  accept: '*/*',
+  'sec-fetch-site': 'same-origin',
+  'sec-fetch-mode': 'cors',
+  'sec-fetch-dest': 'empty',
+  referer: 'http://localhost:3000/dashboard/beneficiary',
+  'accept-encoding': 'gzip, deflate, br, zstd',
+  'accept-language': 'en-US,en;q=0.9,es;q=0.8',
+  cookie: 'wp-settings-time-1=1742632971; __next_hmr_refresh_hash__=2c565db4a1aad6a2a5dfad867f930b00633457081244afec',
+  'if-none-match': '"3aegnc8cfa2s4"',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http',
+  'x-forwarded-for': '::1'
+}
+🔍 Fetching user reports from smart contract
+👤 Extracted userAddress: GCO55KO3K77M2BKTCENTP6NCXVZIQME3WUVKT66C6JQQERINIOLVY2ZS
+👤 Fetching reports for user: GCO55KO3K7...
+🔄 Converting Stellar account address using Address constructor...
+✅ Address created successfully using new Address() constructor
+🔧 Calling contract method: get_user_reports
+📖 Using simulation for read-only operation
+📋 Raw contract response: [
+  {
+    amount_needed: 50000n,
+    amount_raised: 0n,
+    category: 'education',
+    created_at: 1752487138n,
+    creator: 'GCO55KO3K77M2BKTCENTP6NCXVZIQME3WUVKT66C6JQQERINIOLVY2ZS',
+    description: 'Test with funding account paying fees',
+    id: 3n,
+    image_urls: [],
+    location: 'Test Location',
+    status: 'pending',
+    title: 'Test Funding Report',
+    updated_at: 1752487138n,
+    verification_notes: ''
+  },
+  {
+    amount_needed: 25000n,
+    amount_raised: 0n,
+    category: 'education',
+    created_at: 1752487578n,
+    creator: 'GCO55KO3K77M2BKTCENTP6NCXVZIQME3WUVKT66C6JQQERINIOLVY2ZS',
+    description: 'Testing the app-sponsored transaction pattern',
+    id: 4n,
+    image_urls: [],
+    location: 'Test Location',
+    status: 'pending',
+    title: 'App-Sponsored Test Report',
+    updated_at: 1752487578n,
+    verification_notes: ''
+  },
+  {
+    amount_needed: 100000n,
+    amount_raised: 0n,
+    category: 'education',
+    created_at: 1752493273n,
+    creator: 'GCO55KO3K77M2BKTCENTP6NCXVZIQME3WUVKT66C6JQQERINIOLVY2ZS',
+    description: 'Developer help',
+    id: 5n,
+    image_urls: [
+      'https://firebasestorage.googleapis.com/v0/b/stellar-latam.firebasestorage.app/o/need-reports%2Ftemp_1752493266912_7oxuapuqz%2F1752493266912_stylized-man-avatar.png?alt=media&token=8dd27f68-b140-49b5-8d4f-9b2e216f902e'
+    ],
+    location: 'Online',
+    status: 'pending',
+    title: 'Developer help',
+    updated_at: 1752493273n,
+    verification_notes: ''
+  },
+  {
+    amount_needed: 100000n,
+    amount_raised: 0n,
+    category: 'education',
+    created_at: 1752493834n,
+    creator: 'GCO55KO3K77M2BKTCENTP6NCXVZIQME3WUVKT66C6JQQERINIOLVY2ZS',
+    description: 'Developer help',
+    id: 6n,
+    image_urls: [
+      'https://firebasestorage.googleapis.com/v0/b/stellar-latam.firebasestorage.app/o/need-reports%2Ftemp_1752493827481_9cn6x7srw%2F1752493827481_stylized-man-avatar.png?alt=media&token=2086d89e-92f2-421a-87cd-0ebe658f3258'
+    ],
+    location: 'Online',
+    status: 'pending',
+    title: 'Developer help',
+    updated_at: 1752493834n,
+    verification_notes: ''
+  },
+  {
+    amount_needed: 50000n,
+    amount_raised: 0n,
+    category: 'food',
+    created_at: 1752495205n,
+    creator: 'GCO55KO3K77M2BKTCENTP6NCXVZIQME3WUVKT66C6JQQERINIOLVY2ZS',
+    description: 'Weekend emergency',
+    id: 7n,
+    image_urls: [
+      'https://firebasestorage.googleapis.com/v0/b/stellar-latam.firebasestorage.app/o/need-reports%2Ftemp_1752495197150_no7lxlpop%2F1752495197150_logo.png?alt=media&token=9760cc85-a7ec-45f0-898e-3061d91bd276',
+      'https://firebasestorage.googleapis.com/v0/b/stellar-latam.firebasestorage.app/o/need-reports%2Ftemp_1752497107582_7xkusu7f6%2F1752497107583_beneficiary-avatar.png?alt=media&token=eb22a837-5d77-439d-bc62-e166c0877a62',
+      'https://firebasestorage.googleapis.com/v0/b/stellar-latam.firebasestorage.app/o/need-reports%2Ftemp_1752520903101_2nl48iybn%2F1752520903101_stylized-man-avatar.png?alt=media&token=ea5b7d4b-6c32-48ea-8410-82e9e8f0b64f'
+    ],
+    location: 'Online',
+    status: 'pending',
+    title: 'Weekend emergency',
+    updated_at: 1752520908n,
+    verification_notes: ''
+  }
+]
+✅ Found 5 reports for user
+ GET /api/vercel/soroban/need-reports/user?userAddress=GCO55KO3K77M2BKTCENTP6NCXVZIQME3WUVKT66C6JQQERINIOLVY2ZS 304 in 31ms
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+ GET /dashboard/beneficiary/needs/7 200 in 811ms
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+✅ Get route: Soroban RPC server initialized successfully
+🔍 Fetching need reports from smart contract
+📋 Fetching specific report: 7
+🔧 Calling contract method: get_report
+📖 Using simulation for read-only operation
+❌ Contract call failed: TypeError: this.source.incrementSequenceNumber is not a function
+    at callContract (pages/api/vercel/soroban/need-reports/get.ts:62:25)
+    at async handler (pages/api/vercel/soroban/need-reports/get.ts:125:13)
+  60 |     }).addOperation(operation).setTimeout(30)
+  61 |     
+> 62 |     const tx = txBuilder.build()
+     |                         ^
+  63 |     
+  64 |     const simulation = await server.simulateTransaction(tx)
+  65 |     
+❌ Error fetching need reports: TypeError: this.source.incrementSequenceNumber is not a function
+    at callContract (pages/api/vercel/soroban/need-reports/get.ts:62:25)
+    at async handler (pages/api/vercel/soroban/need-reports/get.ts:125:13)
+  60 |     }).addOperation(operation).setTimeout(30)
+  61 |     
+> 62 |     const tx = txBuilder.build()
+     |                         ^
+  63 |     
+  64 |     const simulation = await server.simulateTransaction(tx)
+  65 |     
+ GET /api/vercel/soroban/need-reports/get?reportId=7 500 in 262ms
+🔍 Fetching need reports from smart contract
+📋 Fetching specific report: 7
+🔧 Calling contract method: get_report
+📖 Using simulation for read-only operation
+❌ Contract call failed: TypeError: this.source.incrementSequenceNumber is not a function
+    at callContract (pages/api/vercel/soroban/need-reports/get.ts:62:25)
+    at async handler (pages/api/vercel/soroban/need-reports/get.ts:125:13)
+  60 |     }).addOperation(operation).setTimeout(30)
+  61 |     
+> 62 |     const tx = txBuilder.build()
+     |                         ^
+  63 |     
+  64 |     const simulation = await server.simulateTransaction(tx)
+  65 |     
+❌ Error fetching need reports: TypeError: this.source.incrementSequenceNumber is not a function
+    at callContract (pages/api/vercel/soroban/need-reports/get.ts:62:25)
+    at async handler (pages/api/vercel/soroban/need-reports/get.ts:125:13)
+  60 |     }).addOperation(operation).setTimeout(30)
+  61 |     
+> 62 |     const tx = txBuilder.build()
+     |                         ^
+  63 |     
+  64 |     const simulation = await server.simulateTransaction(tx)
+  65 |     
+ GET /api/vercel/soroban/need-reports/get?reportId=7 500 in 57ms
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+ GET /dashboard/beneficiary/needs/7 200 in 76ms
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+ GET /dashboard/beneficiary/needs/7 200 in 18ms
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+ GET /dashboard/beneficiary/needs/7 200 in 11ms
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+✅ Get route: Soroban RPC server initialized successfully
+🔍 Fetching need reports from smart contract
+📋 Fetching specific report: 7
+🔧 Calling contract method: get_report
+📖 Using simulation for read-only operation
+❌ Contract call failed: Error: Simulation failed: HostError: Error(WasmVm, InvalidAction)
+
+Event log (newest first):
+   0: [Diagnostic Event] contract:CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, topics:[error, Error(WasmVm, InvalidAction)], data:["VM call trapped: UnreachableCodeReached", get_report]
+   1: [Diagnostic Event] topics:[fn_call, CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, get_report], data:7
+
+    at <unknown> (1: [Diagnostic Event] topics:[fn_call, CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, get_report], data:7)
+    at callContract (pages/api/vercel/soroban/need-reports/get.ts:61:12)
+    at async handler (pages/api/vercel/soroban/need-reports/get.ts:132:13)
+  59 |     
+  60 |     if (simulation.error) {
+> 61 |       throw new Error(`Simulation failed: ${simulation.error}`)
+     |            ^
+  62 |     }
+  63 |     
+  64 |     if (simulation.result?.retval) {
+❌ Error fetching need reports: Error: Simulation failed: HostError: Error(WasmVm, InvalidAction)
+
+Event log (newest first):
+   0: [Diagnostic Event] contract:CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, topics:[error, Error(WasmVm, InvalidAction)], data:["VM call trapped: UnreachableCodeReached", get_report]
+   1: [Diagnostic Event] topics:[fn_call, CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, get_report], data:7
+
+    at <unknown> (1: [Diagnostic Event] topics:[fn_call, CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, get_report], data:7)
+    at callContract (pages/api/vercel/soroban/need-reports/get.ts:61:12)
+    at async handler (pages/api/vercel/soroban/need-reports/get.ts:132:13)
+  59 |     
+  60 |     if (simulation.error) {
+> 61 |       throw new Error(`Simulation failed: ${simulation.error}`)
+     |            ^
+  62 |     }
+  63 |     
+  64 |     if (simulation.result?.retval) {
+ GET /api/vercel/soroban/need-reports/get?reportId=7 500 in 267ms
+🔍 Fetching need reports from smart contract
+📑 Fetching all reports with pagination: { offset: '0', limit: '10' }
+🔧 Calling contract method: get_all_reports
+📖 Using simulation for read-only operation
+❌ Contract call failed: Error: Simulation failed: HostError: Error(WasmVm, InvalidAction)
+
+Event log (newest first):
+   0: [Diagnostic Event] contract:CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, topics:[error, Error(WasmVm, InvalidAction)], data:["VM call trapped: UnreachableCodeReached", get_all_reports]
+   1: [Diagnostic Event] topics:[fn_call, CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, get_all_reports], data:[0, 10]
+
+    at callContract (pages/api/vercel/soroban/need-reports/get.ts:61:12)
+    at async handler (pages/api/vercel/soroban/need-reports/get.ts:132:13)
+  59 |     
+  60 |     if (simulation.error) {
+> 61 |       throw new Error(`Simulation failed: ${simulation.error}`)
+     |            ^
+  62 |     }
+  63 |     
+  64 |     if (simulation.result?.retval) {
+❌ Error fetching need reports: Error: Simulation failed: HostError: Error(WasmVm, InvalidAction)
+
+Event log (newest first):
+   0: [Diagnostic Event] contract:CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, topics:[error, Error(WasmVm, InvalidAction)], data:["VM call trapped: UnreachableCodeReached", get_all_reports]
+   1: [Diagnostic Event] topics:[fn_call, CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, get_all_reports], data:[0, 10]
+
+    at callContract (pages/api/vercel/soroban/need-reports/get.ts:61:12)
+    at async handler (pages/api/vercel/soroban/need-reports/get.ts:132:13)
+  59 |     
+  60 |     if (simulation.error) {
+> 61 |       throw new Error(`Simulation failed: ${simulation.error}`)
+     |            ^
+  62 |     }
+  63 |     
+  64 |     if (simulation.result?.retval) {
+ GET /api/vercel/soroban/need-reports/get 500 in 106ms
+🔍 Fetching need reports from smart contract
+📑 Fetching all reports with pagination: { offset: '0', limit: '10' }
+🔧 Calling contract method: get_all_reports
+📖 Using simulation for read-only operation
+❌ Contract call failed: Error: Simulation failed: HostError: Error(WasmVm, InvalidAction)
+
+Event log (newest first):
+   0: [Diagnostic Event] contract:CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, topics:[error, Error(WasmVm, InvalidAction)], data:["VM call trapped: UnreachableCodeReached", get_all_reports]
+   1: [Diagnostic Event] topics:[fn_call, CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, get_all_reports], data:[0, 10]
+
+    at callContract (pages/api/vercel/soroban/need-reports/get.ts:61:12)
+    at async handler (pages/api/vercel/soroban/need-reports/get.ts:132:13)
+  59 |     
+  60 |     if (simulation.error) {
+> 61 |       throw new Error(`Simulation failed: ${simulation.error}`)
+     |            ^
+  62 |     }
+  63 |     
+  64 |     if (simulation.result?.retval) {
+❌ Error fetching need reports: Error: Simulation failed: HostError: Error(WasmVm, InvalidAction)
+
+Event log (newest first):
+   0: [Diagnostic Event] contract:CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, topics:[error, Error(WasmVm, InvalidAction)], data:["VM call trapped: UnreachableCodeReached", get_all_reports]
+   1: [Diagnostic Event] topics:[fn_call, CBJVRBD5TCCM3BF22NDZPBSMU7VON5LQZBQOW3HMTN3PFDWD2TLW34XW, get_all_reports], data:[0, 10]
+
+    at callContract (pages/api/vercel/soroban/need-reports/get.ts:61:12)
+    at async handler (pages/api/vercel/soroban/need-reports/get.ts:132:13)
+  59 |     
+  60 |     if (simulation.error) {
+> 61 |       throw new Error(`Simulation failed: ${simulation.error}`)
+     |            ^
+  62 |     }
+  63 |     
+  64 |     if (simulation.result?.retval) {
+ GET /api/vercel/soroban/need-reports/get 500 in 101ms
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+ GET /dashboard/beneficiary/needs/7 200 in 43ms
+ ⚠ ./node_modules/require-addon/lib/runtime/bare.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/bare.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/default.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/default.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/require-addon/lib/runtime/node.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/require-addon/lib/runtime/node.js
+./node_modules/require-addon/index.js
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx
+
+./node_modules/sodium-native/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/sodium-native/index.js
+./node_modules/@stellar/stellar-base/lib/signing.js
+./node_modules/@stellar/stellar-base/lib/index.js
+./node_modules/@stellar/stellar-sdk/lib/index.js
+./lib/stellar-client.ts
+./contexts/WalletContext.tsx

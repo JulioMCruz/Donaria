@@ -173,7 +173,21 @@ export default function DonorNeedDetailPage({ params }: { params: Promise<{ id: 
       setError(null)
       console.log('🔍 Fetching need data for donor view, ID:', resolvedParams.id)
 
-      const response = await fetch(`/api/soroban/need-reports/get?reportId=${resolvedParams.id}`)
+      // Use direct SDK route in development, rewrite handles it in production
+      const isDevelopment = window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1' ||
+                           window.location.hostname.includes('ngrok.io') ||
+                           process.env.NODE_ENV === 'development'
+      const apiUrl = isDevelopment
+        ? `/api/vercel/soroban/need-reports/get?reportId=${resolvedParams.id}`
+        : `/api/soroban/need-reports/get?reportId=${resolvedParams.id}`
+      
+      console.log('🌍 Environment:', process.env.NODE_ENV)
+      console.log('🌐 Hostname:', window.location.hostname)
+      console.log('🔧 isDevelopment:', isDevelopment)
+      console.log('🔗 API URL:', apiUrl)
+
+      const response = await fetch(apiUrl)
       const data = await response.json()
 
       if (response.ok && data.success && data.reports) {
