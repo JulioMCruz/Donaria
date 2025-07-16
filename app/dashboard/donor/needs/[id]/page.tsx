@@ -221,8 +221,8 @@ export default function DonorNeedDetailPage({ params }: { params: Promise<{ id: 
       <div className="min-h-screen bg-gray-100 dark:bg-gray-950">
         <header className="px-4 md:px-6 h-16 flex items-center justify-between border-b bg-white dark:bg-gray-900 sticky top-0 z-10">
           <Link href="/" className="flex items-center justify-center gap-2">
-            <HandHeart className="h-6 w-6 text-teal-500" />
-            <span className="font-bold text-xl text-gray-800 dark:text-white">DONARIA</span>
+            {/* <HandHeart className="h-6 w-6 text-teal-500" />
+            <span className="font-bold text-xl text-gray-800 dark:text-white">DONARIA</span> */}
           </Link>
           <Link href="/dashboard/donor">
             <Button variant="outline" size="sm" className="bg-transparent">
@@ -245,8 +245,8 @@ export default function DonorNeedDetailPage({ params }: { params: Promise<{ id: 
       <div className="min-h-screen bg-gray-100 dark:bg-gray-950">
         <header className="px-4 md:px-6 h-16 flex items-center justify-between border-b bg-white dark:bg-gray-900 sticky top-0 z-10">
           <Link href="/" className="flex items-center justify-center gap-2">
-            <HandHeart className="h-6 w-6 text-teal-500" />
-            <span className="font-bold text-xl text-gray-800 dark:text-white">DONARIA</span>
+            {/* <HandHeart className="h-6 w-6 text-teal-500" />
+            <span className="font-bold text-xl text-gray-800 dark:text-white">DONARIA</span> */}
           </Link>
           <Link href="/dashboard/donor">
             <Button variant="outline" size="sm" className="bg-transparent">
@@ -273,10 +273,10 @@ export default function DonorNeedDetailPage({ params }: { params: Promise<{ id: 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-950">
       <header className="px-4 md:px-6 h-16 flex items-center justify-between border-b bg-white dark:bg-gray-900 sticky top-0 z-10">
-        <Link href="/" className="flex items-center justify-center gap-2">
+        {/* <Link href="/" className="flex items-center justify-center gap-2">
           <HandHeart className="h-6 w-6 text-teal-500" />
           <span className="font-bold text-xl text-gray-800 dark:text-white">DONARIA</span>
-        </Link>
+        </Link> */}
         <Link href="/dashboard/donor">
           <Button variant="outline" size="sm" className="bg-transparent">
             <ArrowLeft className="mr-2 h-4 w-4" />
