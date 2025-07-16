@@ -370,7 +370,7 @@ flowchart LR
         SIMULATION[Transaction Simulation]
         ASSEMBLY[assembleTransaction]
         STELLAR[Stellar Ledger]
-        FEES[Minimal Fees (~$0.00001)]
+        FEES[Minimal Fees - $0.00001]
     end
     
     USER --> SIGNIN
