@@ -471,6 +471,20 @@ This approach removes complexity while maintaining the **core benefits** of bloc
 - **Features**: CRUD operations, change logging, admin controls, statistics
 - **Integration**: Pure Stellar SDK with optimistic confirmation
 
+### Donation System Architecture
+
+#### 🎯 Direct Stellar Payments
+- **Direct transfers**: Donor → Beneficiary wallets (no intermediaries)
+- **Native XLM**: Uses Stellar's native cryptocurrency for instant, low-cost transfers
+- **Fee sponsorship**: Platform can optionally sponsor transaction fees for better UX
+- **Transaction verification**: All payments publicly verifiable on Stellar blockchain
+
+#### 🔧 Enhanced Debugging Features
+- **Comprehensive logging**: Detailed transaction flow tracking in donation API
+- **Balance verification**: Pre-transaction balance checks with clear error messages
+- **Account status monitoring**: Real-time account funding and validity checks
+- **Error diagnostics**: Step-by-step transaction failure analysis
+
 ### Live Contract Statistics
 ```json
 {
@@ -573,6 +587,50 @@ make build           # Build Rust smart contract
 make test            # Run contract tests
 make deploy-testnet  # Deploy to Stellar testnet
 make fund-alice      # Fund deployment account
+```
+
+## 🐛 Troubleshooting
+
+### Donation Issues
+
+If donations appear to process but don't transfer funds, check these common issues:
+
+#### 1. **Account Funding**
+```bash
+# Check if donor account is funded on testnet
+https://stellar.expert/explorer/testnet/account/DONOR_PUBLIC_KEY
+
+# Fund account using Stellar Laboratory (testnet only)
+https://laboratory.stellar.org/#account-creator?network=test
+```
+
+#### 2. **Enhanced Debug Logs**
+The donation API now includes comprehensive logging. Check server logs for:
+- 🔄 Payment process initialization
+- 👤 Source account loading and balance check
+- 💰 Current XLM balance vs required amount
+- 🏗️ Transaction building and signing
+- 🚀 Network submission results
+
+#### 3. **Common Error Messages**
+- **"Insufficient balance"**: Donor needs more XLM in their testnet account
+- **"Account not found"**: Donor account not created/funded on Stellar network
+- **"Invalid destination"**: Beneficiary wallet address is malformed
+- **"Transaction failed"**: Network issues or fee problems
+
+#### 4. **Browser Console Debugging**
+1. Open browser Developer Tools (F12)
+2. Go to Console tab
+3. Attempt donation
+4. Look for error messages or failed API calls
+
+#### 5. **Manual Account Funding**
+For testnet development:
+```bash
+# Get testnet XLM from Stellar Laboratory
+# 1. Visit: https://laboratory.stellar.org/#account-creator?network=test
+# 2. Enter donor's public key
+# 3. Click "Create Account" to fund with 10,000 XLM
 ```
 
 ### Smart Contract Development
