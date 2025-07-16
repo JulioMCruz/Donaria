@@ -166,7 +166,18 @@ export default function CreateNeedPage() {
           controller.abort()
         }, 120000) // 2 minute timeout
         
-        response = await fetch('/api/soroban/need-reports/create', {
+        // Use direct SDK route in development, rewrite handles it in production
+        const isDevelopment = window.location.hostname === 'localhost' || 
+                             window.location.hostname === '127.0.0.1' ||
+                             window.location.hostname.includes('ngrok.io') ||
+                             process.env.NODE_ENV === 'development'
+        const createApiUrl = isDevelopment
+          ? '/api/vercel/soroban/need-reports/create'
+          : '/api/soroban/need-reports/create'
+        
+        console.log('🔧 Create API URL:', createApiUrl)
+        
+        response = await fetch(createApiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

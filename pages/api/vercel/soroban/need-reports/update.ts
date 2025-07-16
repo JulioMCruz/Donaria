@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { 
   Contract, 
-  SorobanRpc, 
   Keypair, 
   Networks, 
   TransactionBuilder,
@@ -14,7 +13,21 @@ const NEED_REPORTS_CONTRACT_ID = process.env.NEED_REPORTS_CONTRACT_ID || 'CBJVRB
 const STELLAR_FUNDING_SECRET = process.env.STELLAR_FUNDING_SECRET
 
 // Initialize Soroban RPC server
-const server = new SorobanRpc.Server('https://soroban-testnet.stellar.org')
+let server: any
+
+try {
+  const StellarSdk = require('@stellar/stellar-sdk')
+  
+  if (StellarSdk.rpc && StellarSdk.rpc.Server) {
+    server = new StellarSdk.rpc.Server('https://soroban-testnet.stellar.org')
+    console.log('✅ Update route: Soroban RPC server initialized successfully')
+  } else {
+    console.error('❌ Update route: StellarSdk.rpc.Server not found in SDK')
+    throw new Error('Stellar SDK rpc.Server not available')
+  }
+} catch (error) {
+  console.error('❌ Update route: Failed to initialize Soroban server:', error)
+}
 
 // Helper function to call contract methods
 async function callContract(contractId: string, method: string, args: any[] = [], sourceSecret: string) {
@@ -54,7 +67,9 @@ async function callContract(contractId: string, method: string, args: any[] = []
     let preparedTx = tx
     if (simulation.result && simulation.result.auth) {
       console.log('🔐 Applying authorization...')
-      preparedTx = SorobanRpc.assembleTransaction(tx, simulation).build()
+      // Get StellarSdk for assembleTransaction
+      const StellarSdk = require('@stellar/stellar-sdk')
+      preparedTx = StellarSdk.assembleTransaction(tx, simulation).build()
     }
     
     // Sign the transaction
@@ -171,7 +186,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Prepare contract parameters - only include defined fields
     const contractArgs = [
       nativeToScVal(parseInt(reportId), { type: 'u32' }), // report_id
-      nativeToScVal(Address.fromString(userAddress), { type: 'address' }), // updater
+      nativeToScVal(userAddress, { type: 'address' }), // updater
       nativeToScVal(reason, { type: 'string' }) // reason
     ]
 

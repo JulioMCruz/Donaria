@@ -46,14 +46,37 @@ export default function BeneficiaryDashboard() {
       setError(null)
       console.log('🔍 Fetching reports for user:', wallet.publicKey.substring(0, 10) + '...')
 
-      const response = await fetch(`/api/soroban/need-reports/user?userAddress=${wallet.publicKey}`)
+      // Use direct SDK route in development, rewrite handles it in production
+      const isDevelopment = window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1' ||
+                           window.location.hostname.includes('ngrok.io') ||
+                           process.env.NODE_ENV === 'development'
+      const apiUrl = isDevelopment
+        ? `/api/vercel/soroban/need-reports/user?userAddress=${wallet.publicKey}`
+        : `/api/soroban/need-reports/user?userAddress=${wallet.publicKey}`
+      
+      console.log('🌍 Environment:', process.env.NODE_ENV)
+      console.log('🌐 Hostname:', window.location.hostname)
+      console.log('🔧 isDevelopment:', isDevelopment)
+      console.log('🔗 API URL:', apiUrl)
+      console.log('📡 Making fetch request...')
+      
+      const response = await fetch(apiUrl)
+      console.log('📊 Response status:', response.status)
+      console.log('📊 Response ok:', response.ok)
+      console.log('📊 Response headers:', Object.fromEntries(response.headers.entries()))
+      
       const data = await response.json()
+      console.log('📦 Response data:', data)
 
       if (response.ok && data.success) {
-        console.log(`✅ Loaded ${data.reports.length} reports`)
+        console.log(`✅ Successfully loaded ${data.reports.length} reports`)
         setReports(data.reports)
       } else {
-        console.error('❌ Failed to fetch reports:', data.error)
+        console.error('❌ API request failed:')
+        console.error('  - Status:', response.status)
+        console.error('  - Data:', data)
+        console.error('  - Error:', data.error)
         setError(data.error || 'Failed to fetch reports')
         toast.error('Failed to load your reports')
       }

@@ -173,7 +173,21 @@ export default function DonorNeedDetailPage({ params }: { params: Promise<{ id: 
       setError(null)
       console.log('🔍 Fetching need data for donor view, ID:', resolvedParams.id)
 
-      const response = await fetch(`/api/soroban/need-reports/get?reportId=${resolvedParams.id}`)
+      // Use direct SDK route in development, rewrite handles it in production
+      const isDevelopment = window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1' ||
+                           window.location.hostname.includes('ngrok.io') ||
+                           process.env.NODE_ENV === 'development'
+      const apiUrl = isDevelopment
+        ? `/api/vercel/soroban/need-reports/get?reportId=${resolvedParams.id}`
+        : `/api/soroban/need-reports/get?reportId=${resolvedParams.id}`
+      
+      console.log('🌍 Environment:', process.env.NODE_ENV)
+      console.log('🌐 Hostname:', window.location.hostname)
+      console.log('🔧 isDevelopment:', isDevelopment)
+      console.log('🔗 API URL:', apiUrl)
+
+      const response = await fetch(apiUrl)
       const data = await response.json()
 
       if (response.ok && data.success && data.reports) {
@@ -207,8 +221,8 @@ export default function DonorNeedDetailPage({ params }: { params: Promise<{ id: 
       <div className="min-h-screen bg-gray-100 dark:bg-gray-950">
         <header className="px-4 md:px-6 h-16 flex items-center justify-between border-b bg-white dark:bg-gray-900 sticky top-0 z-10">
           <Link href="/" className="flex items-center justify-center gap-2">
-            <HandHeart className="h-6 w-6 text-teal-500" />
-            <span className="font-bold text-xl text-gray-800 dark:text-white">DONARIA</span>
+            {/* <HandHeart className="h-6 w-6 text-teal-500" />
+            <span className="font-bold text-xl text-gray-800 dark:text-white">DONARIA</span> */}
           </Link>
           <Link href="/dashboard/donor">
             <Button variant="outline" size="sm" className="bg-transparent">
@@ -231,8 +245,8 @@ export default function DonorNeedDetailPage({ params }: { params: Promise<{ id: 
       <div className="min-h-screen bg-gray-100 dark:bg-gray-950">
         <header className="px-4 md:px-6 h-16 flex items-center justify-between border-b bg-white dark:bg-gray-900 sticky top-0 z-10">
           <Link href="/" className="flex items-center justify-center gap-2">
-            <HandHeart className="h-6 w-6 text-teal-500" />
-            <span className="font-bold text-xl text-gray-800 dark:text-white">DONARIA</span>
+            {/* <HandHeart className="h-6 w-6 text-teal-500" />
+            <span className="font-bold text-xl text-gray-800 dark:text-white">DONARIA</span> */}
           </Link>
           <Link href="/dashboard/donor">
             <Button variant="outline" size="sm" className="bg-transparent">
@@ -259,10 +273,10 @@ export default function DonorNeedDetailPage({ params }: { params: Promise<{ id: 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-950">
       <header className="px-4 md:px-6 h-16 flex items-center justify-between border-b bg-white dark:bg-gray-900 sticky top-0 z-10">
-        <Link href="/" className="flex items-center justify-center gap-2">
+        {/* <Link href="/" className="flex items-center justify-center gap-2">
           <HandHeart className="h-6 w-6 text-teal-500" />
           <span className="font-bold text-xl text-gray-800 dark:text-white">DONARIA</span>
-        </Link>
+        </Link> */}
         <Link href="/dashboard/donor">
           <Button variant="outline" size="sm" className="bg-transparent">
             <ArrowLeft className="mr-2 h-4 w-4" />

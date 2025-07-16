@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { 
   Contract, 
-  SorobanRpc, 
   Keypair, 
   Networks, 
   TransactionBuilder,
@@ -11,7 +10,21 @@ import {
 } from '@stellar/stellar-sdk'
 
 // Initialize Soroban RPC server
-const server = new SorobanRpc.Server('https://soroban-testnet.stellar.org')
+let server: any
+
+try {
+  const StellarSdk = require('@stellar/stellar-sdk')
+  
+  if (StellarSdk.rpc && StellarSdk.rpc.Server) {
+    server = new StellarSdk.rpc.Server('https://soroban-testnet.stellar.org')
+    console.log('✅ Store message route: Soroban RPC server initialized successfully')
+  } else {
+    console.error('❌ Store message route: StellarSdk.rpc.Server not found in SDK')
+    throw new Error('Stellar SDK rpc.Server not available')
+  }
+} catch (error) {
+  console.error('❌ Store message route: Failed to initialize Soroban server:', error)
+}
 
 // Helper function to call contract methods
 async function callContract(contractId: string, method: string, args: any[] = [], sourceSecret: string) {
@@ -51,7 +64,9 @@ async function callContract(contractId: string, method: string, args: any[] = []
     let preparedTx = tx
     if (simulation.result && simulation.result.auth) {
       console.log('🔐 Applying authorization...')
-      preparedTx = SorobanRpc.assembleTransaction(tx, simulation).build()
+      // Get StellarSdk for assembleTransaction
+      const StellarSdk = require('@stellar/stellar-sdk')
+      preparedTx = StellarSdk.assembleTransaction(tx, simulation).build()
     }
     
     // Sign the transaction
@@ -137,7 +152,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     // Prepare contract arguments
     const contractArgs = [
-      nativeToScVal(Address.fromString(userAddress), { type: 'address' }), // user
+      nativeToScVal(userAddress, { type: 'address' }), // user
       nativeToScVal(message, { type: 'string' }) // message
     ]
     
